@@ -30,6 +30,7 @@ namespace Pile.Controllers
         {
         }
 
+
         public AccountController(ApplicationUserManager userManager,
             ISecureDataFormat<AuthenticationTicket> accessTokenFormat)
         {

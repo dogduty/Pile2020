@@ -1,0 +1,113 @@
+﻿@using DogDutyClassLibrary
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @*@Scripts.Render("~/bundles/angularjs")*@
+    @*@Scripts.Render("~/bundles/genericController")*@
+
+<script src="~/Scripts/angular.js"></script>
+<script src="~/Scripts/angular-route.js"></script>
+<script src="~/Scripts/ui-bootstrap-tpls-2.5.0.min.js"></script>
+
+<script src="~/Scripts/APIScripts/Module.js?v1.02"></script>
+<script src="~/Scripts/APIScripts/Service.js"></script>
+<script src="~/Scripts/APIScripts/Generic.js"></script>
+
+    <meta content="@(Response.Cookies["DisplayMode"].Value)" />
+    @if (DDAppSession.Current.CssMode == DDAppSession.ViewMode.Dark)
+    {
+        <link id="MyCss" href="/Content/DarkStyle.css?v1.0" rel="stylesheet" />
+    }
+    else
+    {
+        <link id="MyCss" href="/Content/LightStyle.css?v1.0" rel="stylesheet" />
+    }
+</head>
+<body>
+
+
+    <nav class="container navbar @(Response.Cookies["DisplayMode"].Value == "DarkStyle" ? "navbar-inverse" : "navbar-default") ">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="~/Home">
+                    <img src="~/images/logo.png" alt="Scoop Wizards" class="logo-header">
+                </a>
+            </div>
+
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav nav">
+                    <li>@Html.ActionLink("Main", "Index", "Home", new { area = "" }, null)</li>
+                    <li><a href="~/CustomerTaskListing.aspx?CustID=0">My Tasks</a></li>
+                    <li><a href="~/CallLog.aspx">Call Log</a></li>
+                    <li><a href="~/RouteListing.aspx">Routes</a></li>
+                    <li>@Html.ActionLink("Customers", "Index", "Customers")</li>
+                    <li><a href="~/Reports.aspx">Reports</a></li>
+                    <li><a href="~/SystemUpdates.aspx">Update Forms</a></li>
+                    <li>@Html.ActionLink("Progress", "Index", "Progress")</li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+
+    <div class="container body-content">
+        @RenderBody()
+        <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.Year - Scoop Wizards</p>
+        </footer>
+
+
+
+        @*@Html.ActionLink(DDAppSession.Current.CssMode == DDAppSession.ViewMode.Dark ? "Lights On" : "Lights Out", "SwitchViewMode", "Controls", null, new { @class = "btn btn-sm btn-primary btn-inverse" })*@
+
+
+
+        @*<a class="btn btn-sm btn-primary btn-inverse" id="lightButton" href="" onclick="darkMode(@(DDAppSession.Current.CssMode == DDAppSession.ViewMode.Dark ? "'dark'" : "'light'")); return false;">
+            @(DDAppSession.Current.CssMode == DDAppSession.ViewMode.Dark ? "Lights On" : "Lights Out" )
+        </a>*@
+    </div>
+
+
+
+    <script type="text/javascript">
+        function darkMode(current) {
+            if (current == "dark") {
+                $("#MyCss").attr("href", "/Content/LightStyle.css");
+                $("#lightButton").attr("onclick", "darkMode('light'); return false;"); 
+                $("#lightButton").html("Lights Out");
+            }
+            else {
+                $("#MyCss").attr("href", "/Content/DarkStyle.css");
+                $("#lightButton").attr("onclick", "darkMode('dark'); return false;");
+                $("#lightButton").html("Lights On");
+            }
+            var ajaxAction = (current == "dark" ? "light" : "dark");
+            $.ajax({
+                type: "GET",
+                url: "/api/Controls/" + ajaxAction,
+                contnetType: "application/json; charset=utf-8",
+                dataType: "json"
+            });
+        }
+
+    </script>
+
+
+
+    @RenderSection("scripts", required: false)
+</body>
+</html>
