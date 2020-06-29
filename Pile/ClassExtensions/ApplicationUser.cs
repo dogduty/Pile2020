@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNet.Identity.EntityFramework;
+using Pile.db;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -19,5 +22,6 @@ namespace Pile.Models
             await UserManager.SendEmailAsync(this.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>.  Or by pasting this in your browser's address bar: " + callbackUrl);
         }
 
+        public int EmployeeId { get; set; }
     }
 }

@@ -44,6 +44,11 @@ namespace Pile
             return manager;
         }
 
+        public static int GetEmployeeId()
+        {
+            return ((ApplicationUser)System.Web.HttpContext.Current.User).EmployeeId;
+        }
+
     }
 
     public class ApplicationSignInManager : SignInManager<ApplicationUser, string>

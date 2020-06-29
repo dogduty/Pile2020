@@ -1,0 +1,482 @@
+﻿@model Pile.db.Customer
+
+<div data-ng-app="APIModule">
+    <div ng-controller="ExistingCheck" lastname="@(Model.LastName)" address="@(Model.MainAddress().Address1)" email="@(Model.GetMainEmail().Email)">
+        <div class="col-xs-12" ng-show="@(Model.CustomerId) == 0" ng-init="accordion = false" ng-click="accordion = !accordion" ng-class"bg-success"  ng-class="objs != null && objs.length > 0 ? 'bg-danger' : ''">
+            {{objs == null ? 0 : objs.length}} possible matches.  <span ng-show="objs != null && objs.length !=0">Click to expand, again to shrink.</span>
+        </div>
+        <div class="col-xs-12"  ng-show="accordion==true">
+            <table class="table">
+                <tr ng-repeat="obj in objs">
+                    <td><a href="/customers/details/{{obj.CustomerId}}">{{obj.CustomerId}}</a></td>
+                    <td>{{obj.FirstName}} {{obj.LastName}}</td><td>{{obj.Email}}</td><td>{{obj.Address}}</td><td>{{obj.City}}</td><td>{{obj.Zip}}
+                </tr>
+            </table>
+        </div>
+
+
+
+        @Html.AntiForgeryToken()
+
+        @Html.HiddenFor(model => model.CustomerId)
+        @Html.HiddenFor(model => model.StartDate)
+
+        @Html.HiddenFor(model => model.GPS)
+
+        @Html.HiddenFor(model => model.QBId)
+        @Html.HiddenFor(model => model.QbSyncToken)
+        @Html.HiddenFor(model => model.QBBalance)
+        @Html.HiddenFor(model => model.QBTotalBalance)
+        @Html.HiddenFor(model => model.QBInvoiceNumber)
+        @Html.HiddenFor(model => model.QBSubTotal)
+        @Html.HiddenFor(model => model.QBLastInvoiceDate)
+        @Html.HiddenFor(model => model.DBStartDate)
+        @Html.HiddenFor(model => model.DBEndDate)
+        @Html.HiddenFor(model => model.EmailStatus)
+
+        @Html.HiddenFor(model => model.LateLastSent)
+        @Html.HiddenFor(model => model.CallOfficeLastSent)
+        @Html.HiddenFor(model => model.FinalNoticeLastSent)
+
+        @Html.HiddenFor(model => model.FMNotes)
+
+        @Html.HiddenFor(model => model.BulkEmailDate)
+
+        @Html.HiddenFor(model => model.LastUpdate)
+        @Html.HiddenFor(model => model.LastQbUpdate)
+
+        @if (Model.CustomerId == 0)
+        {
+            <div class="col-xs-3">
+                <h2 class="no-top-margin">New Customer</h2>
+            </div>
+        }
+        else
+        {
+            <div class="col-xs-3">
+                <h2 class="no-top-margin">@String.Format("{0} {1}", Model.FirstName ?? "", Model.LastName ?? "")</h2>
+                <h4>Customer ID - @Model.CustomerId.ToString()</h4>
+            </div>
+        }
+
+        <div class="col-xs-2">
+
+            <div>
+                @Html.DropDownList("Status", null, htmlAttributes: new { @class = "form-control" })
+            </div>
+            <div>
+                @Html.DropDownList("Type", null, htmlAttributes: new { @class = "form-control" })
+            </div>
+
+        </div>
+
+        <div class="col-xs-1">
+            <div class="bold">QbId</div>
+            <div id="QbId">@Model.QBId</div>
+        </div>
+
+        <div class="col-xs-3">
+            <div class="col-xs-6">
+                <div>@Html.EditorFor(model => model.CreditCardOnFile, null) CC on File</div>
+                <div>@Html.EditorFor(model => model.CustomerSetup, null) Cust Setup</div>
+            </div>
+            <div class="col-xs-6">
+                <div>@Html.EditorFor(model => model.MeetScheduled, null) Meet Sched</div>
+                <div>@Html.EditorFor(model => model.MeetPerformed, null) Cust Met</div>
+            </div>
+        </div>
+        <div class="col-xs-12">
+            <h4>@Html.ValidationSummary(true, "", new { @class = "text-danger" })</h4>
+        </div>
+
+        <hr class="clearfix form-line" />
+
+        <div>
+
+            <div class="col-xs-3">
+                <input type="submit" value="Save" class="btn btn-sm btn-success" />
+            </div>
+            <div class="col-xs-3">
+                @if (Model.CustomerId == 0)
+                {
+                    @Html.ActionLink("Cancel", "Index", null, new { @class = "btn btn-sm btn-danger" })
+                }
+                else
+                {
+                    @Html.ActionLink("Cancel", "Details", new { id = Model.CustomerId }, new { @class = "btn btn-sm btn-danger" })
+                }
+            </div>
+        </div>
+
+
+
+        <div>
+            &nbsp;
+            <hr class="clearfix form-line" />
+        </div>
+
+        <div class="form-group col-xs-3">
+            <label for="Address" class="control-label label-push-content">First Name</label>
+            <div class="detail-result">
+                @Html.EditorFor(model => model.FirstName, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.FirstName, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group col-xs-3">
+            <label for="LastName" class="control-label label-push-content">Last Name</label>
+            <div class="detail-result">
+                @if (Model.CustomerId == 0)
+                {
+                    <input type="text" id="ngLastName" class="text-box single-line" ng-model="lastName" ng-blur="getList()" />
+                    @Html.HiddenFor(model => model.LastName)
+                }
+                else
+                {
+                    @Html.EditorFor(model => model.LastName, new { @class = "form-control" })
+                }
+                @Html.ValidationMessageFor(model => model.LastName, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group col-xs-3">
+            <label for="State" class="control-label label-push-content">Spouse First</label>
+            <div class="detail-result">
+                @Html.EditorFor(model => model.SpouseFirstName, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.SpouseFirstName, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+
+        <div class="form-group col-xs-3">
+            <label for="Zip" class="control-label label-push-content">Spouse Last</label>
+            <div class="detail-result">@Html.EditorFor(model => model.SpouseLastName, new { @class = "form-control" }) </div>
+            @Html.ValidationMessageFor(model => model.SpouseLastName, "", new { @class = "text-danger" })
+        </div>
+
+
+        <hr class="clearfix form-line" />
+
+
+        @*<div class="form-group col-xs-3">
+            <label for="Address" class="control-label label-push-content">Address</label>
+            <div class="detail-result">
+                @if (Model.CustomerId == 0)
+                {
+                    <input type="text" id="ngAddress" class="text-box single-line" ng-model="address" ng-blur="getList()" />
+                    @Html.HiddenFor(model => model.Address)
+                }
+                else
+                {
+                    @Html.EditorFor(model => model.Address, new { @class = "form-control" })
+                }
+                @Html.ValidationMessageFor(model => model.Address, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group col-xs-3">
+            <label for="City" class="control-label label-push-content">City</label>
+            <div class="detail-result">
+                @Html.EditorFor(model => model.City, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.City, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group col-xs-3">
+            <label for="State" class="control-label label-push-content">State</label>
+            <div class="detail-result">
+                @Html.EditorFor(model => model.State, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.State, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+
+        <div class="form-group col-xs-3">
+            <label for="Zip" class="control-label label-push-content">Zip</label>
+            <div class="detail-result">@Html.EditorFor(model => model.Zip, new { @class = "form-control" }) </div>
+        </div>
+
+        <hr class="clearfix form-line" />
+
+        <div class="form-group col-xs-3">
+            <label for="MailAddress" class="control-label label-push-content">Mail Address</label>
+            <div class="detail-result">@Html.EditorFor(model => model.MailAddress, new { @class = "form-control" })</div>
+        </div>
+
+        <div class="form-group col-xs-3">
+            <label for="MailCity" class="control-label label-push-content">Mail City</label>
+            <div class="detail-result">
+                @Html.EditorFor(model => model.MailCity, new { @class = "form-control" })
+            </div>
+        </div>
+
+        <div class="form-group col-xs-3">
+            <label for="MailCity" class="control-label label-push-content">Mail State</label>
+            <div class="detail-result">
+                @Html.EditorFor(model => model.MailState, new { @class = "form-control" })
+            </div>
+        </div>
+
+        <div class="form-group col-xs-3">
+            <label for="MailZip" class="control-label label-push-content">Mail Zip</label>
+            <div class="detail-result">@Html.EditorFor(model => model.MailZip, new { @class = "form-control" })</div>
+        </div>*@
+
+
+        <hr class="clearfix form-line" />
+
+
+
+        @*<div class="form-group col-xs-3">
+            <label for="phones" class="control-label label-push-content">Mobile</label>
+            <div class="detail-result">
+                @Html.EditorFor(model => model.Mobile, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.Mobile, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group col-xs-3">
+
+            <label for="phones" class="control-label label-push-content">Home</label>
+            <div class="detail-result">
+                @Html.EditorFor(model => model.Home, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.Home, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group col-xs-3">
+
+            <label for="phones" class="control-label label-push-content">Work</label>
+            <div class="detail-result">
+                @Html.EditorFor(model => model.WorkPhone, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.WorkPhone, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group col-xs-3">
+
+            <label for="phones" class="control-label label-push-content">Other</label>
+            <div class="detail-result">
+                @Html.EditorFor(model => model.OtherPhone, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.OtherPhone, "", new { @class = "text-danger" })
+            </div>
+        </div>*@
+
+        <hr class="clearfix form-line" />
+
+
+        @*<div class="form-group col-xs-4">
+
+            <div class="detail-result">Notes 1</div>
+            <div class="detail-result">
+                <div class="detail-result">@Html.EditorFor(model => model.Notes1, new { @class = "form-control" })</div>
+            </div>
+        </div>
+
+
+        <div class="form-group col-xs-4">
+
+            <div class="detail-result">Notes 2</div>
+            <div class="detail-result">
+                <div class="detail-result">@Html.EditorFor(model => model.Notes2, new { @class = "form-control" })</div>
+            </div>
+        </div>
+
+        <div class="form-group col-xs-4">
+
+            <div class="detail-result">Notes 3</div>
+            <div class="detail-result">
+                <div class="detail-result">@Html.EditorFor(model => model.Notes3, new { @class = "form-control" })</div>
+            </div>
+        </div>*@
+
+
+        <hr class="clearfix form-line" />
+
+        <div class="form-group col-xs-4">
+            <label for="Combo" class="control-label label-push-content">Gate Code</label>
+            <div class="detail-result">@Html.EditorFor(model => model.Combo)</div>
+        </div>
+
+
+        @*<div class="form-group col-xs-4">
+            <label for="Email" class="control-label label-push-content">Email</label>
+            <div class="detail-result">
+                @if (Model.CustomerId == 0)
+                {
+                    <input type="text" id="ngEmail" class="text-box single-line" ng-model="email" ng-blur="getList()" />
+                    @Html.HiddenFor(model => model.Email)
+                }
+                else
+                {
+                    @Html.EditorFor(model => model.Email, new { @class = "form-control" })
+                }
+                @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+            </div>
+            <div class="detail-result">@Html.EditorFor(model => model.TurnOffServiceEmails, null) No Svc Emails</div>
+        </div>
+
+        <div class="form-group col-xs-4">
+            <label for="Email2" class="control-label label-push-content">Email2</label>
+            <div class="detail-result">@Html.EditorFor(model => model.Email2) &nbsp;</div>
+            <div class="detail-result">@Html.EditorFor(model => model.TurnOffServiceEmail2, null) No Svc Email</div>
+
+        </div>*@
+
+        <hr class="clearfix form-line" />
+
+
+        <div class="col-xs-4">
+            <div class="bold">Source</div>
+            @Html.DropDownList("HowFound", null, htmlAttributes: new { @class = "form-control" })
+            @Html.EditorFor(model => model.HowFoundSpecify)
+        </div>
+
+        <div class="col-xs-4">
+            <div class="bold">WhyQuit</div>
+            @Html.DropDownList("WhyQuit", null, htmlAttributes: new { @class = "form-control" })
+            @Html.EditorFor(model => model.WhyQuitSpecify)
+        </div>
+
+        <div class="form-group col-xs-4">
+            <label for="dates" class="control-label label-push-content">Dates</label>
+            <div id="dates">
+                <div class="detail-result">
+                    @Html.EditorFor(model => model.MeetSchDate, "NullableDate", new { htmlAttributes = new { @class = "form-control" } }) - Meet
+                </div>
+                <div class="detail-result">
+                    @Html.EditorFor(model => model.MeetSchTime, new { htmlAttributes = new { style = "width: 153px;" } }) - Meet Time
+                </div>
+                <div class="detail-result">
+                    @Html.EditorFor(model => model.RouteStartDate, "NullableDate", new { htmlAttributes = new { @class = "form-control" } }) - Route Start
+                    @Html.ValidationMessageFor(model => model.RouteStartDate, "", new { @class = "text-danger" })
+                </div>
+                @*<div class="detail-result">
+                    @Html.EditorFor(model => model.PauseDate, "NullableDate", new { htmlAttributes = new { @class = "form-control" } }) - Pause Start
+                </div>
+                <div class="detail-result">
+                    @Html.EditorFor(model => model.ReStartDate, "NullableDate", new { htmlAttributes = new { @class = "form-control" } }) - Restart
+                </div>*@
+                <div class="detail-result">
+                    @Html.EditorFor(model => model.FinalServiceDate, "NullableDate", new { htmlAttributes = new { onchange = "alert('blah'); reutrn false;", @class = "form-control" } }) - Final Svc
+                </div>
+            </div>
+        </div>
+
+
+        <hr class="clearfix form-line" />
+
+        <div class="col-xs-4">
+            <div class="bold">Flag</div>
+            @Html.DropDownList("Flag", null, htmlAttributes: new { @class = "form-control" })
+        </div>
+
+        <div class="col-xs-4">
+            <div class="bold">Late Pmt Amt</div>
+            <div>@Html.EditorFor(model => model.LatePmt)</div>
+        </div>
+
+        <div class="col-xs-4">
+            <div class="bold">Resend Email</div>
+            <input type="checkbox" id="cbFlagResend" name="cbFlagResend" />
+        </div>
+
+
+
+        <hr class="clearfix form-line" />
+
+
+        <div class="col-xs-4">
+            <div class="bold">Notices Last Sent</div>
+            @if (Model.FinalNoticeLastSent != null)
+            {
+                <div>@Model.FinalNoticeLastSent.Value.ToShortDateString() - Final Notice</div>
+            }
+            @if (Model.LateLastSent != null)
+            {
+                <div>@Model.LateLastSent.Value.ToShortDateString() - Late Notice</div>
+            }
+            @if (Model.CallOfficeLastSent != null)
+            {
+                <div>@Model.CallOfficeLastSent.Value.ToShortDateString() - Call Office</div>
+            }
+
+        </div>
+
+        <div class="col-xs-4">
+            <div class="bold">Payment Method</div>
+            @Html.DropDownList("PaymentMethod", null, htmlAttributes: new { @class = "form-control" })
+        </div>
+
+        <div class="col-xs-4">
+            <div class="bold">Invoice Method</div>
+            @Html.DropDownList("InvoiceMethod", null, htmlAttributes: new { @class = "form-control" })
+        </div>
+
+
+        <hr class="clearfix form-line" />
+
+        <div class="col-xs-4">
+            <div class="bold">Code</div>
+            <div>@Html.EditorFor(model => model.Code)</div>
+        </div>
+
+        <div class="col-xs-4">
+            <div class="bold">Renewal Term: </div>
+            @Html.EditorFor(model => model.ContractRenewalTerm)
+        </div>
+
+        <div class="col-xs-4">
+            <div class="bold">Cancelation Term: </div>
+            @Html.EditorFor(model => model.ContractCancellationTerm)
+        </div>
+
+
+        <hr class="clearfix form-line" />
+
+        <div>
+
+            <div class="col-xs-4">
+                <input type="submit" value="Save" class="btn btn-sm btn-success" />
+            </div>
+            <div class="col-xs-4">
+                @if (Model.CustomerId == 0)
+                {
+                    @Html.ActionLink("Cancel", "Index", null, new { @class = "btn btn-sm btn-danger" })
+                }
+                else
+                {
+                    @Html.ActionLink("Cancel", "Details", new { id = Model.CustomerId }, new { @class = "btn btn-sm btn-danger" })
+                }
+            </div>
+        </div>
+
+        <hr class="clearfix form-line" />
+    </div>
+</div>
+
+    <script type="text/javascript">
+        document.getElementById("MeetSchDate").value = "@ViewBag.FormattedMeet";
+        document.getElementById("FinalServiceDate").value = "@ViewBag.FormattedFinal";
+        document.getElementById("RouteStartDate").value = "@ViewBag.FormattedRoute";
+        document.getElementById("PauseDate").value = "@ViewBag.FormattedPause";
+        document.getElementById("ReStartDate").value = "@ViewBag.FormattedRestart";
+    </script>
+
+    @section Scripts {
+        @Scripts.Render("~/bundles/jquery")
+    }
+
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#FinalServiceDate").change(function () {
+                if ($("#FinalServiceDate").val() != "") {
+                    $("#Status").val("I");
+                }
+            });
+        });
+    </script>
+
+
+<script src="~/Scripts/APIScripts/Customers/ExistingCheck.js?v1.06"></script>
+
+
+

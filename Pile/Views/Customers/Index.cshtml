@@ -1,0 +1,136 @@
+﻿<div data-ng-app="APIModule">
+    <div ng-controller="Generic" ng-init="init('Customers', 'getNew')">
+        <div 
+    </div>
+</div>
+
+
+    @if (ViewBag.ShowAll == true)
+    {
+        <h2>All Customers</h2>
+    }
+    else
+    {
+        <h2>Active Customers</h2>
+    }
+
+    @using (@Html.BeginForm("Search", "Customers", FormMethod.Get, new { @class = "form-inline" }))
+    {
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-3">
+                    @if (ViewBag.ShowAll == true)
+                    {
+                        @Html.ActionLink("Active Only", "", null, new { @class = "btn btn-sm btn-primary btn-inverse" })
+                    }
+                    else
+                    {
+                        @Html.ActionLink("Show All", "", new { showAll = true }, new { @class = "btn btn-sm btn-primary btn-inverse" })
+                    }
+                    @Html.ActionLink("Create New", "Create", null, new { @class = "btn btn-sm btn-primary btn-inverse" })
+                    @*<a class="btn btn-sm btn-primary btn-inverse" href="~/Customer.aspx?CustID=0">Create New</a>*@
+                </div>
+                <div class="col-sm-2">
+                    <label for="cbSearchAll">Include Inactive</label>
+                    <input type="checkbox" id="cbSearchAll" name="SearchAll" />
+                </div>
+                <div class="col-sm-2">
+                    <input class="form-control" id="txtCustomerSearch" name="SearchValue" type="text" placeholder="Enter Search Text" />
+                </div>
+                <div class="col-sm-1">
+                    <input type="submit" class="btn btn-sm btn-primary btn-inverse" />
+                </div>
+            </div>
+        </div>
+
+    }
+    <p>&nbsp;</p>
+    <table class="table">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Status)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FirstName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LastName)
+            </th>
+            <th>
+                Address
+            </th>
+            <th>
+                City
+            </th>
+            <th>
+                Zip
+            </th>
+            <th>
+                Mobile
+            </th>
+            <th>
+                Home
+            </th>
+            <th>
+                Email
+            </th>
+            <th>
+                Spouse
+            </th>
+
+
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Status)
+                </td>
+
+                <td>
+                    @if (!string.IsNullOrEmpty(item.FirstName))
+                    {
+                        @Html.ActionLink(item.FirstName, "details", new { id = item.CustomerId });
+                    }
+                </td>
+
+                <td>
+                    @if (!string.IsNullOrEmpty(item.LastName))
+                    {
+                        @Html.ActionLink(item.LastName, "details", new { id = item.CustomerId })
+                    }
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.Addresses.Where(x => x.AddressType == "Site").FirstOrDefault().Address1)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.Addresses.Where(x => x.AddressType == "Site").FirstOrDefault().City)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.Addresses.Where(x => x.AddressType == "Site").FirstOrDefault().Zip)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.Phones.Where(x => x.PhoneType == "Mobile").FirstOrDefault().Number)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.Phones.Where(x => x.PhoneType == "Home").FirstOrDefault().Number)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.EmailAddresses.FirstOrDefault(x => x.IsPrimary).Email)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.SpouseFirstName) @Html.DisplayFor(modelItem => item.SpouseLastName)
+                </td>
+
+            </tr>
+        }
+
+    </table>

@@ -4,17 +4,50 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="1389b5286acd4286809ee226c6e4bb40" Name="Diagram1" ZoomLevel="101">
-        <EntityTypeShape EntityType="db.Address" Width="1.5" PointX="3" PointY="1.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="db.Customer" Width="1.5" PointX="0.75" PointY="1.375" IsExpanded="true" />
-        <EntityTypeShape EntityType="db.Note" Width="1.5" PointX="3" PointY="5.125" IsExpanded="true" />
-        <EntityTypeShape EntityType="db.Pause" Width="1.5" PointX="3" PointY="7.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="db.Phone" Width="1.5" PointX="3" PointY="10.375" IsExpanded="true" />
-        <AssociationConnector Association="db.FK__Address__Custome__3E52440B" ManuallyRouted="false" />
-        <AssociationConnector Association="db.FK__Notes__CustomerI__4AB81AF0" ManuallyRouted="false" />
-        <AssociationConnector Association="db.FK__Pause__CustomerI__29572725" ManuallyRouted="false" />
-        <AssociationConnector Association="db.FK__Phone__CustomerI__440B1D61" ManuallyRouted="false" />
-      </Diagram>
+      <Diagram DiagramId="1389b5286acd4286809ee226c6e4bb40" Name="Diagram1" ZoomLevel="100">
+        <EntityTypeShape EntityType="db.Address" Width="1.5" PointX="6.25" PointY="1.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="db.Pause" Width="1.5" PointX="6.25" PointY="4.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="db.Phone" Width="1.5" PointX="6.25" PointY="7.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="db.EmailAddress" Width="1.5" PointX="8.5" PointY="5.5" />
+        <EntityTypeShape EntityType="db.ServiceDetail" Width="1.5" PointX="8.375" PointY="9.375" />
+        <EntityTypeShape EntityType="db.Service" Width="1.5" PointX="10.625" PointY="7.875" />
+        <AssociationConnector Association="db.FK_ServiceDetail_Service" />
+        <EntityTypeShape EntityType="db.DropDownValue" Width="1.5" PointX="10.625" PointY="11.5" />
+        <EntityTypeShape EntityType="db.HowFound" Width="1.5" PointX="2" PointY="3.625" />
+        <EntityTypeShape EntityType="db.InvoiceMethod" Width="1.5" PointX="2" PointY="5.75" />
+        <EntityTypeShape EntityType="db.PaymentMethod" Width="1.5" PointX="2" PointY="7.875" />
+        <EntityTypeShape EntityType="db.QuitReason" Width="1.5" PointX="2" PointY="1.5" />
+        <EntityTypeShape EntityType="db.Route" Width="1.5" PointX="6.125" PointY="12.375" />
+        <EntityTypeShape EntityType="db.RouteWeek" Width="1.5" PointX="13.5" PointY="0.5" />
+        <EntityTypeShape EntityType="db.Frequency" Width="1.5" PointX="13" PointY="8" />
+        <AssociationConnector Association="db.FK_Service_Freq" />
+        <EntityTypeShape EntityType="db.CustomerHistory" Width="1.5" PointX="1.875" PointY="10.75" />
+        <EntityTypeShape EntityType="db.CompanyInfo" Width="1.5" PointX="12.875" PointY="10.25" />
+        <EntityTypeShape EntityType="db.EmailAccount" Width="1.5" PointX="17.875" PointY="4" />
+        <EntityTypeShape EntityType="db.EmailDomain" Width="1.5" PointX="15.625" PointY="4.125" />
+        <EntityTypeShape EntityType="db.EmailServer" Width="1.5" PointX="13.375" PointY="4.25" />
+        <EntityTypeShape EntityType="db.EmailTemplate" Width="1.5" PointX="20.125" PointY="4" />
+        <EntityTypeShape EntityType="db.EmailType" Width="1.5" PointX="17.875" PointY="1.375" />
+        <AssociationConnector Association="db.FK_EmailDomain" />
+        <AssociationConnector Association="db.FK_EmailTemplate_EmailAccount" />
+        <AssociationConnector Association="db.FK_EmailServerId" />
+        <AssociationConnector Association="db.FK_EmailTemplate_EmailType" />
+        <EntityTypeShape EntityType="db.Employee" Width="1.5" PointX="13" PointY="12.25" />
+        <EntityTypeShape EntityType="db.Note" Width="1.5" PointX="3.875" PointY="14.125" />
+        <EntityTypeShape EntityType="db.Customer" Width="1.5" PointX="4.125" PointY="1.5" />
+        <AssociationConnector Association="db.FK__Address__Custome__3E52440B" />
+        <AssociationConnector Association="db.FK__EmailAddr__Custo__5441852A" />
+        <AssociationConnector Association="db.FK__Note__CustomerId__65370702" />
+        <AssociationConnector Association="db.FK__Pause__CustomerI__29572725" />
+        <AssociationConnector Association="db.FK__Phone__CustomerI__440B1D61" />
+        <AssociationConnector Association="db.FK_CustomerHistory_Customer" />
+        <AssociationConnector Association="db.FK_CustomerHowFound" />
+        <AssociationConnector Association="db.FK_CustomerInvoiceMethod" />
+        <AssociationConnector Association="db.FK_CustomerPaymentMethod" />
+        <AssociationConnector Association="db.FK_CustomerQuitReason" />
+        <AssociationConnector Association="db.FK_Route_Customer" />
+        <AssociationConnector Association="db.FK_ServiceDetail_Customer" />
+        </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
 </edmx:Edmx>

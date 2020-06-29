@@ -16,7 +16,8 @@ namespace Pile.db
     {
         public long Id { get; set; }
         public int CustomerId { get; set; }
-        public string Note1 { get; set; }
+        public System.DateTime NoteTime { get; set; }
+        public string Content { get; set; }
     
         public virtual Customer Customer { get; set; }
     }

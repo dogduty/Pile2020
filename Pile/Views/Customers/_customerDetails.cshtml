@@ -1,0 +1,284 @@
+﻿@model Pile.db.Customer
+
+@{
+    ViewBag.GpsQueryString = string.Join("&", new string[] { "GPS=" + Model.GPS, "CustID=" + Model.CustomerId.ToString(), "Name=" + Model.FirstName + ' ' + Model.LastName, "Address=" + Model.MainAddress() });
+}
+
+<div class="col-xs-3">
+    <h2 class="no-top-margin">@String.Format("{0} {1}", Model.FirstName ?? "", Model.LastName ?? "")</h2>
+    <h4>Customer ID - @Model.CustomerId.ToString()</h4>
+</div>
+
+<div class="col-xs-2">
+
+    @if (!string.IsNullOrWhiteSpace(Model.Status) && Model.Status == "A")
+    {
+        <div id="Status" class="bold text-success">Active</div>
+    }
+    else
+    {
+        <div id="Status" class="bold text-danger">Inactive</div>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(Model.Type) && Model.Type == "R")
+    {
+        <div id="Type" class="bold text-success">Residential</div>
+    }
+    else
+    {
+        <div id="Type" class="bold text-danger">Commercial</div>
+    }
+    @if (!string.IsNullOrWhiteSpace(Model.Flag))
+    {
+        <div class="bold text-danger">Flag - @Model.Flag</div>
+    }
+</div>
+
+<div class="col-xs-1">
+    <div class="bold">QbId</div>
+    <div id="QbId">@Model.QBId</div>
+</div>
+
+<div class="col-xs-3">
+    <div class="col-xs-6">
+        <div>@Html.CheckBoxFor(model => model.CreditCardOnFile, new { disabled = "disabled" }) CC on File</div>
+        <div>@Html.CheckBoxFor(model => model.CustomerSetup, new { disabled = "disabled" }) Cust Setup</div>
+    </div>
+    <div class="col-xs-6">
+        <div>@Html.CheckBoxFor(model => model.MeetScheduled, new { disabled = "disabled" }) Meet Sched</div>
+        <div>@Html.CheckBoxFor(model => model.MeetPerformed, new { disabled = "disabled" }) Cust Met</div>
+    </div>
+</div>
+
+<div class="col-xs-12">
+    <h4>@Html.ValidationSummary(true, "", new { @class = "text-danger" })</h4>
+</div>
+
+
+<hr class="clearfix form-line" />
+
+<div>
+
+    <div class="col-xs-4">
+        @Html.ActionLink("Edit", "Edit", new { id = Model.CustomerId }, new { @class = "btn btn-sm btn-primary btn-inverse" })
+        @*<a class="btn btn-sm btn-primary btn-inverse" href="~/Customer.aspx?CustID=@(Model.CustomerId.ToString())">Edit</a>*@
+    </div>
+    <div class="col-xs-4">
+        <a class="btn btn-sm btn-primary btn-inverse" href="~/RouteMaps.aspx?@(ViewBag.GpsQueryString)">Route Map</a>
+    </div>
+    <div class="col-xs-4">
+        @Html.DropDownList("Actions", (IEnumerable<SelectListItem>)ViewBag.Actions, "--Take Action--", new { onclick = "takeAction(this)" })
+    </div>
+
+</div>
+
+<div>
+    &nbsp;
+    <hr class="clearfix form-line" />
+</div>
+
+
+
+
+<div class="form-group col-xs-4">
+    <label for="Address" class="control-label label-push-content">Address</label>
+    <div class="detail-result">@Html.DisplayFor(model => model.Addresses.FirstOrDefault(a => a.AddressType == "Site").Address1, new { @class = "form-control" })</div>
+</div>
+
+<div class="form-group col-xs-4">
+    <label for="City" class="control-label label-push-content">City</label>
+    <div class="detail-result">@Html.DisplayFor(model => model.Addresses.FirstOrDefault(a => a.AddressType == "Site").City, new { @class = "form-control" })</div>
+</div>
+
+<div class="form-group col-xs-4">
+    <label for="Zip" class="control-label label-push-content">Zip</label>
+    <div class="detail-result">@Html.DisplayFor(model => model.Addresses.FirstOrDefault(a => a.AddressType == "Site").Zip, new { @class = "form-control" })</div>
+</div>
+
+<hr class="clearfix form-line" />
+
+@if (Model.Addresses.Any(a => a.AddressType == "Mailing"))
+{
+    <div class="form-group col-xs-4">
+        <label for="MailAddress" class="control-label label-push-content">Mail Address</label>
+        <div class="detail-result">@Html.DisplayFor(model => model.Addresses.FirstOrDefault(a => a.AddressType == "Mailing").Address1 , new { @class = "form-control" })</div>
+    </div>
+
+        <div class="form-group col-xs-4">
+            <label for="MailCity" class="control-label label-push-content">Mail City</label>
+            <div class="detail-result">
+                @Html.DisplayFor(model => model.Addresses.FirstOrDefault(a => a.AddressType == "Mailing").City, new { @class = "form-control" })
+                @if (!string.IsNullOrWhiteSpace(Model.Addresses.FirstOrDefault(a => a.AddressType == "Mailing").State))
+                { @Html.Raw(",") @Html.DisplayFor(model => model.Addresses.FirstOrDefault(a => a.AddressType == "Mailing").State, new { @class = "form-control" }) }
+            </div>
+        </div>
+
+        <div class="form-group col-xs-4">
+            <label for="MailZip" class="control-label label-push-content">Mail Zip</label>
+            <div class="detail-result">@Html.DisplayFor(model => model.Addresses.FirstOrDefault(a => a.AddressType == "Mailing").Zip, new { @class = "form-control" })</div>
+        </div>
+
+
+        <hr class="clearfix form-line" />
+}
+
+
+<div class="form-group col-xs-4">
+    <label for="SpouseFirstName" class="control-label label-push-content">Spouse</label>
+    <div class="detail-result">
+        @Html.DisplayFor(model => model.SpouseFirstName, new { @class = "form-control" })
+        @Html.DisplayFor(model => model.SpouseLastName, new { @class = "form-control" })
+    </div>
+</div>
+
+
+<div class="form-group col-xs-4">
+    <label for="phones" class="control-label label-push-content">Phones</label>
+    <div id="phones">
+        @foreach (var phone in Model.Phones.OrderBy(x => x.PhoneType == "Mobile").ThenBy(x => x.PhoneType))
+        {
+            {<div class="detail-result">@phone.Number - @phone.PhoneType</div>}
+        }
+    </div>
+</div>
+
+
+@if(Model.Notes.Any())
+{
+    <div class="form-group col-xs-4">
+        <label for="notes" class="control-label label-push-content">Notes</label>
+        <div id="notes">
+            @foreach (var note in Model.Notes.OrderByDescending(x => x.NoteTime))
+            {
+                <div class="detail-result">@note.NoteTime.ToShortDateString() - @note.Content</div>
+            }
+        </div>
+    </div>
+}
+else
+{
+    <div class="col-xs-4 bold">There are no notes</div>
+}
+
+
+<hr class="clearfix form-line" />
+
+<div class="form-group col-xs-4">
+    <label for="Combo" class="control-label label-push-content">Gate Code</label>
+    <div class="detail-result">@Html.DisplayFor(model => model.Combo)</div>
+</div>
+
+
+<div class="form-group col-xs-4">
+    <label for="Email" class="control-label label-push-content">Email</label>
+    @foreach (var email in Model.EmailAddresses.OrderByDescending(e => e.IsPrimary))
+    {
+        <div class="detail-result">@Html.CheckBox("ServiceEmails", email.ServiceEmails, new { disabled = "disabled" }) @email.Email</div>
+    }
+</div>
+
+
+
+<hr class="clearfix form-line" />
+
+
+<div class="col-xs-4">
+    <div class="bold">Source</div>
+    <div id="HowFound">@ViewBag.HowFound</div>
+    <div id="HowFoundText">@Model.HowFoundSpecify</div>
+</div>
+
+<div class="col-xs-4">
+    <div class="bold">WhyQuit</div>
+    <div id="HowFound">@ViewBag.WhyQuit</div>
+    <div id="HowFoundText">@Model.WhyQuitSpecify</div>
+</div>
+
+<div class="form-group col-xs-4">
+    <label for="dates" class="control-label label-push-content">Dates</label>
+    <div id="dates">
+        @if (Model.FinalServiceDate != null)
+        {
+            <div class="detail-result">@Model.FinalServiceDate.Value.ToShortDateString() - Final Service</div>
+        }
+        @if (Model.MeetSchDate != null)
+        {
+            <div class="detail-result">@Model.MeetSchDate.Value.ToShortDateString() @@ @Model.MeetSchTime - Meet</div>
+        }
+        @if (Model.RouteStartDate != null)
+        {
+            <div class="detail-result">@Model.RouteStartDate.Value.ToShortDateString() - Route Start</div>
+        }
+        @foreach (var pause in Model.Pauses.Where(x => x.RestartDate >= DateTime.Today.AddDays(-7)))
+        {
+            <div class="detail-result">@pause.PauseDate.ToShortDateString() to @pause.RestartDate.ToShortDateString() - Pause</div>
+        }
+    </div>
+</div>
+
+
+<hr class="clearfix form-line" />
+
+
+<div class="col-xs-4">
+    <div class="bold">Code</div>
+    <div>@Model.Code</div>
+</div>
+
+<div class="col-xs-4">
+    <div class="bold">Notices Last Sent</div>
+    @if (Model.FinalNoticeLastSent != null)
+    {
+        <div>@Model.FinalNoticeLastSent.Value.ToShortDateString() - Final Notice</div>
+    }
+    @if (Model.LateLastSent != null)
+    {
+        <div>@Model.LateLastSent.Value.ToShortDateString() - Late Notice</div>
+    }
+    @if (Model.CallOfficeLastSent != null)
+    {
+        <div>@Model.CallOfficeLastSent.Value.ToShortDateString() - Call Office</div>
+    }
+
+</div>
+
+<div class="col-xs-4">
+    <div class="bold">Late Pmt Amt</div>
+    <div>@Model.LatePmt</div>
+</div>
+
+
+
+<hr class="clearfix form-line" />
+
+
+<div class="col-xs-4">
+    <div class="bold">Payment Method</div>
+    <div>@ViewBag.PaymentMethod</div>
+</div>
+
+<div class="col-xs-4">
+    <div class="bold">Invoice Method</div>
+    <div>@ViewBag.InvoiceMethod</div>
+</div>
+
+<div class="col-xs-4">
+    @if (Model.ContractRenewalTerm != null)
+    {
+        <div class="bold">Renewal Term: @Model.ContractRenewalTerm</div>
+    }
+    @if (Model.ContractCancellationTerm != null)
+    {
+        <div class="bold">Cancelation Term: @Model.ContractCancellationTerm</div>
+    }
+</div>
+
+<script type="text/javascript">
+    function takeAction(ddl)
+    {
+        if (ddl.value == "")
+            return;
+        window.open(ddl.value, "custdetail");
+        ddl.selectedIndex = 0;
+    }
+</script>

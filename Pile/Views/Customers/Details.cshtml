@@ -1,0 +1,26 @@
+﻿@model Pile.Models.CustomerSummary
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<div>
+
+    @Html.Partial("_customerDetails", Model.Customer)
+    @*@Html.Partial("_customerDetailEdit", Model.Customer)*@
+
+</div>
+
+<div>
+    @Html.Partial("_ServiceSummary", Model.Services, new ViewDataDictionary { { "CustId", Model.Customer.CustomerId } })
+</div>
+
+<hr class="clearfix form-line" />
+<div class="form-group col-xs-12">
+    <h4>Field Manager Notes</h4>
+</div>
+<div class="col-xs-12">
+        @Html.DisplayFor(model => model.Customer.FMNotes)
+</div>
+
+<div style="clear:both">&nbsp;</div>

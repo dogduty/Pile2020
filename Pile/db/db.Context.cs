@@ -26,9 +26,30 @@ namespace Pile.db
         }
     
         public virtual DbSet<Address> Addresses { get; set; }
-        public virtual DbSet<Customer> Customers { get; set; }
-        public virtual DbSet<Note> Notes { get; set; }
         public virtual DbSet<Pause> Pauses { get; set; }
         public virtual DbSet<Phone> Phones { get; set; }
+        public virtual DbSet<EmailAddress> EmailAddresses { get; set; }
+        public virtual DbSet<ServiceDetail> ServiceDetails { get; set; }
+        public virtual DbSet<Service> Services { get; set; }
+        public virtual DbSet<DropDownValue> DropDownValues { get; set; }
+        public virtual DbSet<HowFound> HowFounds { get; set; }
+        public virtual DbSet<InvoiceMethod> InvoiceMethods { get; set; }
+        public virtual DbSet<PaymentMethod> PaymentMethods { get; set; }
+        public virtual DbSet<QuitReason> QuitReasons { get; set; }
+        public virtual DbSet<Route> Routes { get; set; }
+        public virtual DbSet<RouteWeek> RouteWeeks { get; set; }
+        public virtual DbSet<Frequency> Frequencies { get; set; }
+        public virtual DbSet<CustomerHistory> CustomerHistories { get; set; }
+        public virtual DbSet<CompanyInfo> CompanyInfoes { get; set; }
+        public virtual DbSet<EmailAccount> EmailAccounts { get; set; }
+        public virtual DbSet<EmailDomain> EmailDomains { get; set; }
+        public virtual DbSet<EmailServer> EmailServers { get; set; }
+        public virtual DbSet<EmailTemplate> EmailTemplates { get; set; }
+        public virtual DbSet<EmailType> EmailTypes { get; set; }
+        public virtual DbSet<Employee> Employees { get; set; }
+        public virtual DbSet<Note> Notes { get; set; }
+        public virtual DbSet<Customer> Customers { get; set; }
+
+        public System.Data.Entity.DbSet<Pile.Models.CustomerCreate> CustomerCreates { get; set; }
     }
 }

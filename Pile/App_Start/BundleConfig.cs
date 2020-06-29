@@ -22,6 +22,16 @@ namespace Pile
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
                       "~/Content/site.css"));
+
+            bundles.Add(new ScriptBundle("~/bundles/angularjs").Include(
+                    "~/Scripts/angular.js",
+                    "~/Scripts/angular-route.js",
+                    "~/Scripts/ui-bootstrap-tpls-2.5.0.min.js"));
+
+            bundles.Add(new ScriptBundle("~/bundles/genericController").Include(
+                    "~/Scripts/APIScripts/Module.js",
+                    "~/Scripts/APIScripts/Service.js",
+                    "~/Scripts/APIScripts/Generic.js"));
         }
     }
 }

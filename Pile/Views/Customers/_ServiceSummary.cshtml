@@ -1,0 +1,65 @@
+﻿@model Pile.Models.ServiceSummary
+
+
+
+<hr class="clearfix form-line" />
+<hr class="clearfix form-line" />
+
+<div class="form-group col-xs-12">
+    <div class="col-xs-2">
+        <h3>Services</h3>
+    </div>
+
+    <div class="form-group col-xs-8">
+        <div>
+            <div class="col-xs-3">
+                <label for="GrandWeekly" class="control-label label-push-content"> Weekly Total</label>
+                <div class="detail-result">$@Html.DisplayFor(model => model.GrandWeekly, new { @class = "form-control" })</div>
+            </div>
+            <div class="col-xs-3">
+                <label for="GrandMonthly" class="control-label label-push-content"> Monthly Total</label>
+                <div class="detail-result">$@Html.DisplayFor(model => model.GrandMonthly, new { @class = "form-control" })</div>
+            </div>
+            <div class="col-xs-3">
+                <label for="GrandEmpPay" class="control-label label-push-content"> Emp Monthly Total</label>
+                <div class="detail-result">$@Html.DisplayFor(model => model.GrandEmpPay, new { @class = "form-control" })</div>
+            </div>
+            <div class="col-xs-3">
+                <a class="btn btn-sm btn-primary btn-inverse" href="~/ServiceDetail.aspx?CustID=@(ViewData["CustId"]) ">Add Services</a>
+            </div>
+        </div>
+        <div class="form-group clearfix form-line"></div>
+    </div>
+</div>
+
+@foreach (var service in Model.DailyServices)
+{
+    <div class="form-group">
+        <div class="col-xs-12">
+            <div class="col-xs-2">
+                <div class="detail-result bold">@(Enum.GetName(typeof(DayOfWeek), service.Day)) - @(service.NumDogs) dog@(service.NumDogs == 1 ? "" : "s")</div>
+                <div class="detail-result">Crew: @(service.CrewName)</div>
+                <div class="detail-result">Pay: $@Html.DisplayFor(item => service.EmpAmount)</div>
+            </div>
+            <div class="col-xs-8">
+                <div class="col-xs-3">
+                    <label for="Services" class="control-label label-push-content">Services</label>
+                    <div class="detail-result">@foreach (var descr in service.ServiceList) { @(descr) <br /> } </div>
+                </div>
+                <div class="col-xs-3">
+                    <label for="WeeklyTotal" class="control-label label-push-content">Week</label>
+                    <div class="detail-result">$@Html.DisplayFor(item => service.WeeklyTotal, new { @class = "form-control" })</div>
+                </div>
+                <div class="col-xs-3">
+                    <label for="Total" class="control-label label-push-content">Month</label>
+                    <div class="detail-result">$@Html.DisplayFor(item => service.Total, new { @class = "form-control" })</div>
+                </div>
+                <div class="col-xs-3">
+                    <a class="btn btn-sm btn-primary btn-inverse" href="~/ServiceDetail.aspx?CustID=@(ViewData["CustId"])&Day=@service.Day&Crew=@service.Crew">Edit Services</a>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+

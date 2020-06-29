@@ -16,6 +16,8 @@ namespace Pile.Models
             // Add custom user claims here
             return userIdentity;
         }
+
+
     }
 
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>

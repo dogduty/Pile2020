@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="db.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="db.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="Address">
           <Key>
             <PropertyRef Name="Id" />
@@ -18,6 +18,14 @@
           <Property Name="State" Type="varchar" MaxLength="2" Nullable="false" />
           <Property Name="Zip" Type="varchar" MaxLength="16" Nullable="false" />
         </EntityType>
+        <EntityType Name="CompanyInfo">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Value" Type="varchar" MaxLength="255" Nullable="false" />
+        </EntityType>
         <EntityType Name="Customer">
           <Key>
             <PropertyRef Name="CustomerId" />
@@ -30,21 +38,19 @@
           <Property Name="SpouseFirstName" Type="varchar" MaxLength="64" />
           <Property Name="SpouseLastName" Type="varchar" MaxLength="64" />
           <Property Name="Code" Type="varchar" MaxLength="16" />
-          <Property Name="Email" Type="varchar" MaxLength="64" />
           <Property Name="Status" Type="varchar" MaxLength="1" />
           <Property Name="Type" Type="varchar" MaxLength="1" />
           <Property Name="Combo" Type="varchar" MaxLength="32" />
           <Property Name="FinalServiceDate" Type="smalldatetime" />
-          <Property Name="WhyQuit" Type="int" />
+          <Property Name="QuitReasonId" Type="int" />
           <Property Name="WhyQuitSpecify" Type="varchar" MaxLength="32" />
           <Property Name="RouteStartDate" Type="smalldatetime" />
           <Property Name="StartDate" Type="smalldatetime" />
-          <Property Name="HowFound" Type="int" />
+          <Property Name="HowFoundId" Type="int" />
           <Property Name="HowFoundSpecify" Type="varchar" MaxLength="32" />
           <Property Name="GPS" Type="varchar" MaxLength="32" />
-          <Property Name="PaymentMethod" Type="int" />
-          <Property Name="InvoiceMethod" Type="int" />
-          <Property Name="TurnOffServiceEmails" Type="bit" />
+          <Property Name="PaymentMethodId" Type="int" />
+          <Property Name="InvoiceMethodId" Type="int" />
           <Property Name="QBId" Type="varchar" MaxLength="8" />
           <Property Name="QbSyncToken" Type="varchar" MaxLength="8" />
           <Property Name="QBBalance" Type="money" />
@@ -58,28 +64,150 @@
           <Property Name="LateLastSent" Type="smalldatetime" />
           <Property Name="CallOfficeLastSent" Type="smalldatetime" />
           <Property Name="FinalNoticeLastSent" Type="smalldatetime" />
-          <Property Name="CreditCardOnFile" Type="bit" />
-          <Property Name="CustomerSetup" Type="bit" />
-          <Property Name="MeetScheduled" Type="bit" />
-          <Property Name="MeetPerformed" Type="bit" />
+          <Property Name="CreditCardOnFile" Type="bit" Nullable="false" />
+          <Property Name="CustomerSetup" Type="bit" Nullable="false" />
+          <Property Name="MeetScheduled" Type="bit" Nullable="false" />
+          <Property Name="MeetPerformed" Type="bit" Nullable="false" />
           <Property Name="MeetSchDate" Type="smalldatetime" />
           <Property Name="MeetSchTime" Type="varchar" MaxLength="20" />
           <Property Name="FMNotes" Type="varchar" MaxLength="128" />
-          <Property Name="Email2" Type="varchar" MaxLength="64" />
-          <Property Name="TurnOffServiceEmail2" Type="bit" />
           <Property Name="BulkEmailDate" Type="smalldatetime" />
           <Property Name="ContractRenewalTerm" Type="int" />
           <Property Name="ContractCancellationTerm" Type="int" />
           <Property Name="LastUpdate" Type="smalldatetime" />
           <Property Name="LastQbUpdate" Type="smalldatetime" />
         </EntityType>
-        <EntityType Name="Notes">
+        <EntityType Name="CustomerHistory">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CustomerId" Type="int" />
+          <Property Name="EmployeeId" Type="int" />
+          <Property Name="Date" Type="datetime" />
+          <Property Name="Type" Type="int" />
+          <Property Name="Notes" Type="varchar" MaxLength="128" />
+          <Property Name="Field" Type="varchar" MaxLength="32" />
+        </EntityType>
+        <EntityType Name="DropDownValues">
+          <Key>
+            <PropertyRef Name="DropDownValueId" />
+          </Key>
+          <Property Name="DropDownValueId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="DropDownName" Type="varchar" MaxLength="32" Nullable="false" />
+          <Property Name="DropDownValue" Type="varchar" MaxLength="32" />
+          <Property Name="DropDownText" Type="varchar" MaxLength="32" />
+          <Property Name="Display" Type="bit" />
+        </EntityType>
+        <EntityType Name="EmailAccount">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="LocalPart" Type="varchar" MaxLength="255" />
+          <Property Name="Domain" Type="int" Nullable="false" />
+          <Property Name="DisplayName" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="Password" Type="varchar" MaxLength="512" Nullable="false" />
+        </EntityType>
+        <EntityType Name="EmailAddress">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="CustomerId" Type="int" Nullable="false" />
-          <Property Name="Note" Type="varchar" MaxLength="255" />
+          <Property Name="IsPrimary" Type="bit" Nullable="false" />
+          <Property Name="Email" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="ServiceEmails" Type="bit" Nullable="false" />
+          <Property Name="Info" Type="varchar" MaxLength="255" />
+        </EntityType>
+        <EntityType Name="EmailDomain">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Domain" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="EmailServerId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="EmailServer">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Server" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="Port" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="EmailTemplate">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="EmailTypeId" Type="int" Nullable="false" />
+          <Property Name="Title" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="EmailAccountId" Type="int" Nullable="false" />
+          <Property Name="BodyTemplate" Type="varchar(max)" />
+        </EntityType>
+        <EntityType Name="EmailType">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Employees">
+          <Key>
+            <PropertyRef Name="EmployeeID" />
+          </Key>
+          <Property Name="EmployeeID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Crew" Type="int" />
+          <Property Name="FirstName" Type="varchar" MaxLength="32" />
+          <Property Name="LastName" Type="varchar" MaxLength="32" />
+          <Property Name="Address" Type="varchar" MaxLength="128" />
+          <Property Name="City" Type="varchar" MaxLength="32" />
+          <Property Name="State" Type="varchar" MaxLength="2" />
+          <Property Name="Zip" Type="varchar" MaxLength="12" />
+          <Property Name="HomePhone" Type="varchar" MaxLength="16" />
+          <Property Name="MobilePhone" Type="varchar" MaxLength="16" />
+          <Property Name="TruckID" Type="varchar" MaxLength="16" />
+          <Property Name="CompanyPhone" Type="varchar" MaxLength="16" />
+          <Property Name="StartDate" Type="datetime" />
+          <Property Name="Route" Type="varchar" MaxLength="16" />
+          <Property Name="PayPerc" Type="real" Nullable="false" />
+          <Property Name="Status" Type="varchar" MaxLength="1" />
+          <Property Name="Email" Type="varchar" MaxLength="128" />
+          <Property Name="Password" Type="varchar" MaxLength="128" />
+          <Property Name="AcceptsTasks" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Frequency">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="HowFound">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Display" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="InvoiceMethod">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Display" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Note">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CustomerId" Type="int" Nullable="false" />
+          <Property Name="NoteTime" Type="datetime" Nullable="false" />
+          <Property Name="Content" Type="varchar" MaxLength="255" Nullable="false" />
         </EntityType>
         <EntityType Name="Pause">
           <Key>
@@ -90,6 +218,14 @@
           <Property Name="PauseDate" Type="datetime" Nullable="false" />
           <Property Name="RestartDate" Type="datetime" Nullable="false" />
         </EntityType>
+        <EntityType Name="PaymentMethod">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Display" Type="bit" Nullable="false" />
+        </EntityType>
         <EntityType Name="Phone">
           <Key>
             <PropertyRef Name="Id" />
@@ -99,6 +235,88 @@
           <Property Name="PhoneType" Type="varchar" MaxLength="20" Nullable="false" />
           <Property Name="Number" Type="varchar" MaxLength="32" Nullable="false" />
           <Property Name="Note" Type="varchar" MaxLength="255" />
+        </EntityType>
+        <EntityType Name="QuitReason">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Display" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Route">
+          <Key>
+            <PropertyRef Name="RouteID" />
+          </Key>
+          <Property Name="RouteID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Date" Type="smalldatetime" />
+          <Property Name="CustomerID" Type="int" Nullable="false" />
+          <Property Name="EmployeeId" Type="int" />
+          <Property Name="Status" Type="char" MaxLength="1" />
+          <Property Name="WeeklyRate" Type="smallmoney" />
+          <Property Name="EmpPerc" Type="real" />
+          <Property Name="EmpAmount" Type="smallmoney" />
+          <Property Name="ServiceId" Type="int" />
+          <Property Name="Discount" Type="smallmoney" />
+          <Property Name="LastServiceDate" Type="datetime" />
+          <Property Name="StartServiceDate" Type="datetime" />
+          <Property Name="ServiceDetailId" Type="int" />
+          <Property Name="EstNum" Type="decimal" Precision="7" Scale="1" />
+        </EntityType>
+        <EntityType Name="RouteWeek">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="RouteMonth" Type="datetime" />
+          <Property Name="RouteWeek" Type="tinyint" />
+          <Property Name="WeekStart" Type="datetime" />
+          <Property Name="WeekEnd" Type="datetime" StoreGeneratedPattern="Computed" />
+        </EntityType>
+        <EntityType Name="Service">
+          <Key>
+            <PropertyRef Name="ServiceId" />
+          </Key>
+          <Property Name="ServiceId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Description" Type="varchar" MaxLength="32" />
+          <Property Name="Price" Type="money" />
+          <Property Name="QtyPrice" Type="money" />
+          <Property Name="DisplayOrder" Type="int" />
+          <Property Name="Active" Type="bit" />
+          <Property Name="AutoPop" Type="bit" Nullable="false" />
+          <Property Name="ExcludeEmpPay" Type="bit" Nullable="false" />
+          <Property Name="AdditDogs" Type="money" />
+          <Property Name="FlatEmpPayAmt" Type="money" Nullable="false" />
+          <Property Name="QtyFlatPayAmt" Type="money" Nullable="false" />
+          <Property Name="Freq" Type="int" Nullable="false" />
+          <Property Name="CountDown" Type="smallint" />
+        </EntityType>
+        <EntityType Name="ServiceDetail">
+          <Key>
+            <PropertyRef Name="ServiceDetailId" />
+          </Key>
+          <Property Name="ServiceDetailId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CustomerId" Type="int" Nullable="false" />
+          <Property Name="Day" Type="int" Nullable="false" />
+          <Property Name="Crew" Type="int" Nullable="false" />
+          <Property Name="ServiceId" Type="int" Nullable="false" />
+          <Property Name="Price" Type="money" Nullable="false" />
+          <Property Name="QtyPrice" Type="money" Nullable="false" />
+          <Property Name="Discount" Type="money" Nullable="false" />
+          <Property Name="RequestDiscount" Type="bit" />
+          <Property Name="EstNum" Type="decimal" Precision="7" Scale="1" />
+          <Property Name="AdditAmount" Type="money" Nullable="false" />
+          <Property Name="NumDogs" Type="int" />
+          <Property Name="Qty" Type="int" Nullable="false" />
+          <Property Name="EmpPayAdj" Type="money" />
+          <Property Name="AdditDogs" Type="money" />
+          <Property Name="InvoiceAmount" Type="money" Nullable="false" />
+          <Property Name="NonTaxable" Type="bit" Nullable="false" />
+          <Property Name="LastServiceDate" Type="datetime" />
+          <Property Name="StartServiceDate" Type="datetime" />
+          <Property Name="LastRouteDate" Type="datetime" />
+          <Property Name="CountDown" Type="smallint" Nullable="false" />
+          <Property Name="ServicePackageId" Type="int" />
         </EntityType>
         <Association Name="FK__Address__Custome__3E52440B">
           <End Role="Customer" Type="Self.Customer" Multiplicity="1">
@@ -114,16 +332,30 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Notes__CustomerI__4AB81AF0">
+        <Association Name="FK__EmailAddr__Custo__5441852A">
           <End Role="Customer" Type="Self.Customer" Multiplicity="1">
             <OnDelete Action="Cascade" />
           </End>
-          <End Role="Notes" Type="Self.Notes" Multiplicity="*" />
+          <End Role="EmailAddress" Type="Self.EmailAddress" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Customer">
               <PropertyRef Name="CustomerId" />
             </Principal>
-            <Dependent Role="Notes">
+            <Dependent Role="EmailAddress">
+              <PropertyRef Name="CustomerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Note__CustomerId__65370702">
+          <End Role="Customer" Type="Self.Customer" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Note" Type="Self.Note" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Customer">
+              <PropertyRef Name="CustomerId" />
+            </Principal>
+            <Dependent Role="Note">
               <PropertyRef Name="CustomerId" />
             </Dependent>
           </ReferentialConstraint>
@@ -156,19 +388,198 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_CustomerHistory_Customer">
+          <End Role="Customer" Type="Self.Customer" Multiplicity="0..1" />
+          <End Role="CustomerHistory" Type="Self.CustomerHistory" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Customer">
+              <PropertyRef Name="CustomerId" />
+            </Principal>
+            <Dependent Role="CustomerHistory">
+              <PropertyRef Name="CustomerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CustomerHowFound">
+          <End Role="HowFound" Type="Self.HowFound" Multiplicity="0..1" />
+          <End Role="Customer" Type="Self.Customer" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="HowFound">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Customer">
+              <PropertyRef Name="HowFoundId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CustomerInvoiceMethod">
+          <End Role="InvoiceMethod" Type="Self.InvoiceMethod" Multiplicity="0..1" />
+          <End Role="Customer" Type="Self.Customer" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="InvoiceMethod">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Customer">
+              <PropertyRef Name="InvoiceMethodId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CustomerPaymentMethod">
+          <End Role="PaymentMethod" Type="Self.PaymentMethod" Multiplicity="0..1" />
+          <End Role="Customer" Type="Self.Customer" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PaymentMethod">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Customer">
+              <PropertyRef Name="PaymentMethodId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CustomerQuitReason">
+          <End Role="QuitReason" Type="Self.QuitReason" Multiplicity="0..1" />
+          <End Role="Customer" Type="Self.Customer" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="QuitReason">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Customer">
+              <PropertyRef Name="QuitReasonId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_EmailDomain">
+          <End Role="EmailDomain" Type="Self.EmailDomain" Multiplicity="1" />
+          <End Role="EmailAccount" Type="Self.EmailAccount" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="EmailDomain">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="EmailAccount">
+              <PropertyRef Name="Domain" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_EmailServerId">
+          <End Role="EmailServer" Type="Self.EmailServer" Multiplicity="1" />
+          <End Role="EmailDomain" Type="Self.EmailDomain" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="EmailServer">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="EmailDomain">
+              <PropertyRef Name="EmailServerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_EmailTemplate_EmailAccount">
+          <End Role="EmailAccount" Type="Self.EmailAccount" Multiplicity="1" />
+          <End Role="EmailTemplate" Type="Self.EmailTemplate" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="EmailAccount">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="EmailTemplate">
+              <PropertyRef Name="EmailAccountId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_EmailTemplate_EmailType">
+          <End Role="EmailType" Type="Self.EmailType" Multiplicity="1" />
+          <End Role="EmailTemplate" Type="Self.EmailTemplate" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="EmailType">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="EmailTemplate">
+              <PropertyRef Name="EmailTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Route_Customer">
+          <End Role="Customer" Type="Self.Customer" Multiplicity="1" />
+          <End Role="Route" Type="Self.Route" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Customer">
+              <PropertyRef Name="CustomerId" />
+            </Principal>
+            <Dependent Role="Route">
+              <PropertyRef Name="CustomerID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Service_Freq">
+          <End Role="Frequency" Type="Self.Frequency" Multiplicity="1" />
+          <End Role="Service" Type="Self.Service" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Frequency">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Service">
+              <PropertyRef Name="Freq" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ServiceDetail_Customer">
+          <End Role="Customer" Type="Self.Customer" Multiplicity="1" />
+          <End Role="ServiceDetail" Type="Self.ServiceDetail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Customer">
+              <PropertyRef Name="CustomerId" />
+            </Principal>
+            <Dependent Role="ServiceDetail">
+              <PropertyRef Name="CustomerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ServiceDetail_Service">
+          <End Role="Service" Type="Self.Service" Multiplicity="1" />
+          <End Role="ServiceDetail" Type="Self.ServiceDetail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Service">
+              <PropertyRef Name="ServiceId" />
+            </Principal>
+            <Dependent Role="ServiceDetail">
+              <PropertyRef Name="ServiceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <EntityContainer Name="dbStoreContainer">
           <EntitySet Name="Address" EntityType="Self.Address" Schema="pile" store:Type="Tables" />
+          <EntitySet Name="CompanyInfo" EntityType="Self.CompanyInfo" Schema="pile" store:Type="Tables" />
           <EntitySet Name="Customer" EntityType="Self.Customer" Schema="pile" store:Type="Tables" />
-          <EntitySet Name="Notes" EntityType="Self.Notes" Schema="pile" store:Type="Tables" />
+          <EntitySet Name="CustomerHistory" EntityType="Self.CustomerHistory" Schema="pile" store:Type="Tables" />
+          <EntitySet Name="DropDownValues" EntityType="Self.DropDownValues" Schema="pile" store:Type="Tables" />
+          <EntitySet Name="EmailAccount" EntityType="Self.EmailAccount" Schema="pile" store:Type="Tables" />
+          <EntitySet Name="EmailAddress" EntityType="Self.EmailAddress" Schema="pile" store:Type="Tables" />
+          <EntitySet Name="EmailDomain" EntityType="Self.EmailDomain" Schema="pile" store:Type="Tables" />
+          <EntitySet Name="EmailServer" EntityType="Self.EmailServer" Schema="pile" store:Type="Tables" />
+          <EntitySet Name="EmailTemplate" EntityType="Self.EmailTemplate" Schema="pile" store:Type="Tables" />
+          <EntitySet Name="EmailType" EntityType="Self.EmailType" Schema="pile" store:Type="Tables" />
+          <EntitySet Name="Employees" EntityType="Self.Employees" Schema="pile" store:Type="Tables" />
+          <EntitySet Name="Frequency" EntityType="Self.Frequency" Schema="pile" store:Type="Tables" />
+          <EntitySet Name="HowFound" EntityType="Self.HowFound" Schema="pile" store:Type="Tables" />
+          <EntitySet Name="InvoiceMethod" EntityType="Self.InvoiceMethod" Schema="pile" store:Type="Tables" />
+          <EntitySet Name="Note" EntityType="Self.Note" Schema="pile" store:Type="Tables" />
           <EntitySet Name="Pause" EntityType="Self.Pause" Schema="pile" store:Type="Tables" />
+          <EntitySet Name="PaymentMethod" EntityType="Self.PaymentMethod" Schema="pile" store:Type="Tables" />
           <EntitySet Name="Phone" EntityType="Self.Phone" Schema="pile" store:Type="Tables" />
+          <EntitySet Name="QuitReason" EntityType="Self.QuitReason" Schema="pile" store:Type="Tables" />
+          <EntitySet Name="Route" EntityType="Self.Route" Schema="pile" store:Type="Tables" />
+          <EntitySet Name="RouteWeek" EntityType="Self.RouteWeek" Schema="pile" store:Type="Tables" />
+          <EntitySet Name="Service" EntityType="Self.Service" Schema="pile" store:Type="Tables" />
+          <EntitySet Name="ServiceDetail" EntityType="Self.ServiceDetail" Schema="pile" store:Type="Tables" />
           <AssociationSet Name="FK__Address__Custome__3E52440B" Association="Self.FK__Address__Custome__3E52440B">
             <End Role="Customer" EntitySet="Customer" />
             <End Role="Address" EntitySet="Address" />
           </AssociationSet>
-          <AssociationSet Name="FK__Notes__CustomerI__4AB81AF0" Association="Self.FK__Notes__CustomerI__4AB81AF0">
+          <AssociationSet Name="FK__EmailAddr__Custo__5441852A" Association="Self.FK__EmailAddr__Custo__5441852A">
             <End Role="Customer" EntitySet="Customer" />
-            <End Role="Notes" EntitySet="Notes" />
+            <End Role="EmailAddress" EntitySet="EmailAddress" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Note__CustomerId__65370702" Association="Self.FK__Note__CustomerId__65370702">
+            <End Role="Customer" EntitySet="Customer" />
+            <End Role="Note" EntitySet="Note" />
           </AssociationSet>
           <AssociationSet Name="FK__Pause__CustomerI__29572725" Association="Self.FK__Pause__CustomerI__29572725">
             <End Role="Customer" EntitySet="Customer" />
@@ -178,9 +589,60 @@
             <End Role="Customer" EntitySet="Customer" />
             <End Role="Phone" EntitySet="Phone" />
           </AssociationSet>
+          <AssociationSet Name="FK_CustomerHistory_Customer" Association="Self.FK_CustomerHistory_Customer">
+            <End Role="Customer" EntitySet="Customer" />
+            <End Role="CustomerHistory" EntitySet="CustomerHistory" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CustomerHowFound" Association="Self.FK_CustomerHowFound">
+            <End Role="HowFound" EntitySet="HowFound" />
+            <End Role="Customer" EntitySet="Customer" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CustomerInvoiceMethod" Association="Self.FK_CustomerInvoiceMethod">
+            <End Role="InvoiceMethod" EntitySet="InvoiceMethod" />
+            <End Role="Customer" EntitySet="Customer" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CustomerPaymentMethod" Association="Self.FK_CustomerPaymentMethod">
+            <End Role="PaymentMethod" EntitySet="PaymentMethod" />
+            <End Role="Customer" EntitySet="Customer" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CustomerQuitReason" Association="Self.FK_CustomerQuitReason">
+            <End Role="QuitReason" EntitySet="QuitReason" />
+            <End Role="Customer" EntitySet="Customer" />
+          </AssociationSet>
+          <AssociationSet Name="FK_EmailDomain" Association="Self.FK_EmailDomain">
+            <End Role="EmailDomain" EntitySet="EmailDomain" />
+            <End Role="EmailAccount" EntitySet="EmailAccount" />
+          </AssociationSet>
+          <AssociationSet Name="FK_EmailServerId" Association="Self.FK_EmailServerId">
+            <End Role="EmailServer" EntitySet="EmailServer" />
+            <End Role="EmailDomain" EntitySet="EmailDomain" />
+          </AssociationSet>
+          <AssociationSet Name="FK_EmailTemplate_EmailAccount" Association="Self.FK_EmailTemplate_EmailAccount">
+            <End Role="EmailAccount" EntitySet="EmailAccount" />
+            <End Role="EmailTemplate" EntitySet="EmailTemplate" />
+          </AssociationSet>
+          <AssociationSet Name="FK_EmailTemplate_EmailType" Association="Self.FK_EmailTemplate_EmailType">
+            <End Role="EmailType" EntitySet="EmailType" />
+            <End Role="EmailTemplate" EntitySet="EmailTemplate" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Route_Customer" Association="Self.FK_Route_Customer">
+            <End Role="Customer" EntitySet="Customer" />
+            <End Role="Route" EntitySet="Route" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Service_Freq" Association="Self.FK_Service_Freq">
+            <End Role="Frequency" EntitySet="Frequency" />
+            <End Role="Service" EntitySet="Service" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ServiceDetail_Customer" Association="Self.FK_ServiceDetail_Customer">
+            <End Role="Customer" EntitySet="Customer" />
+            <End Role="ServiceDetail" EntitySet="ServiceDetail" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ServiceDetail_Service" Association="Self.FK_ServiceDetail_Service">
+            <End Role="Service" EntitySet="Service" />
+            <End Role="ServiceDetail" EntitySet="ServiceDetail" />
+          </AssociationSet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="db" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -196,7 +658,449 @@
           <Property Name="City" Type="String" MaxLength="64" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="State" Type="String" MaxLength="2" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="Zip" Type="String" MaxLength="16" FixedLength="false" Unicode="false" Nullable="false" />
-          <NavigationProperty Name="Customer" Relationship="Self.FK__Address__Custome__3E52440B" FromRole="Address" ToRole="Customer" />
+          <NavigationProperty Name="Customer" Relationship="db.FK__Address__Custome__3E52440B" FromRole="Address" ToRole="Customer" />
+        </EntityType>
+        <EntityType Name="Pause">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CustomerId" Type="Int32" Nullable="false" />
+          <Property Name="PauseDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="RestartDate" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Customer" Relationship="db.FK__Pause__CustomerI__29572725" FromRole="Pause" ToRole="Customer" />
+        </EntityType>
+        <EntityType Name="Phone">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CustomerId" Type="Int32" Nullable="false" />
+          <Property Name="PhoneType" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Number" Type="String" MaxLength="32" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Note" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Customer" Relationship="db.FK__Phone__CustomerI__440B1D61" FromRole="Phone" ToRole="Customer" />
+        </EntityType>
+        <EntityContainer Name="pileEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Addresses" EntityType="Self.Address" />
+          <EntitySet Name="Pauses" EntityType="Self.Pause" />
+          <EntitySet Name="Phones" EntityType="Self.Phone" />
+          <EntitySet Name="EmailAddresses" EntityType="db.EmailAddress" />
+          <EntitySet Name="ServiceDetails" EntityType="db.ServiceDetail" />
+          <EntitySet Name="Services" EntityType="db.Service" />
+          <AssociationSet Name="FK_ServiceDetail_Service" Association="db.FK_ServiceDetail_Service">
+            <End Role="Service" EntitySet="Services" />
+            <End Role="ServiceDetail" EntitySet="ServiceDetails" />
+          </AssociationSet>
+          <EntitySet Name="DropDownValues" EntityType="db.DropDownValue" />
+          <EntitySet Name="HowFounds" EntityType="db.HowFound" />
+          <EntitySet Name="InvoiceMethods" EntityType="db.InvoiceMethod" />
+          <EntitySet Name="PaymentMethods" EntityType="db.PaymentMethod" />
+          <EntitySet Name="QuitReasons" EntityType="db.QuitReason" />
+          <EntitySet Name="Routes" EntityType="db.Route" />
+          <EntitySet Name="RouteWeeks" EntityType="db.RouteWeek" />
+          <EntitySet Name="Frequencies" EntityType="db.Frequency" />
+          <AssociationSet Name="FK_Service_Freq" Association="db.FK_Service_Freq">
+            <End Role="Frequency" EntitySet="Frequencies" />
+            <End Role="Service" EntitySet="Services" />
+          </AssociationSet>
+          <EntitySet Name="CustomerHistories" EntityType="db.CustomerHistory" />
+          <EntitySet Name="CompanyInfoes" EntityType="db.CompanyInfo" />
+          <EntitySet Name="EmailAccounts" EntityType="db.EmailAccount" />
+          <EntitySet Name="EmailDomains" EntityType="db.EmailDomain" />
+          <EntitySet Name="EmailServers" EntityType="db.EmailServer" />
+          <EntitySet Name="EmailTemplates" EntityType="db.EmailTemplate" />
+          <EntitySet Name="EmailTypes" EntityType="db.EmailType" />
+          <AssociationSet Name="FK_EmailDomain" Association="db.FK_EmailDomain">
+            <End Role="EmailDomain" EntitySet="EmailDomains" />
+            <End Role="EmailAccount" EntitySet="EmailAccounts" />
+          </AssociationSet>
+          <AssociationSet Name="FK_EmailTemplate_EmailAccount" Association="db.FK_EmailTemplate_EmailAccount">
+            <End Role="EmailAccount" EntitySet="EmailAccounts" />
+            <End Role="EmailTemplate" EntitySet="EmailTemplates" />
+          </AssociationSet>
+          <AssociationSet Name="FK_EmailServerId" Association="db.FK_EmailServerId">
+            <End Role="EmailServer" EntitySet="EmailServers" />
+            <End Role="EmailDomain" EntitySet="EmailDomains" />
+          </AssociationSet>
+          <AssociationSet Name="FK_EmailTemplate_EmailType" Association="db.FK_EmailTemplate_EmailType">
+            <End Role="EmailType" EntitySet="EmailTypes" />
+            <End Role="EmailTemplate" EntitySet="EmailTemplates" />
+          </AssociationSet>
+          <EntitySet Name="Employees" EntityType="db.Employee" />
+          <EntitySet Name="Notes" EntityType="db.Note" />
+          <EntitySet Name="Customers" EntityType="db.Customer" />
+          <AssociationSet Name="FK__Address__Custome__3E52440B" Association="db.FK__Address__Custome__3E52440B">
+            <End Role="Customer" EntitySet="Customers" />
+            <End Role="Address" EntitySet="Addresses" />
+          </AssociationSet>
+          <AssociationSet Name="FK__EmailAddr__Custo__5441852A" Association="db.FK__EmailAddr__Custo__5441852A">
+            <End Role="Customer" EntitySet="Customers" />
+            <End Role="EmailAddress" EntitySet="EmailAddresses" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Note__CustomerId__65370702" Association="db.FK__Note__CustomerId__65370702">
+            <End Role="Customer" EntitySet="Customers" />
+            <End Role="Note" EntitySet="Notes" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Pause__CustomerI__29572725" Association="db.FK__Pause__CustomerI__29572725">
+            <End Role="Customer" EntitySet="Customers" />
+            <End Role="Pause" EntitySet="Pauses" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Phone__CustomerI__440B1D61" Association="db.FK__Phone__CustomerI__440B1D61">
+            <End Role="Customer" EntitySet="Customers" />
+            <End Role="Phone" EntitySet="Phones" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CustomerHistory_Customer" Association="db.FK_CustomerHistory_Customer">
+            <End Role="Customer" EntitySet="Customers" />
+            <End Role="CustomerHistory" EntitySet="CustomerHistories" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CustomerHowFound" Association="db.FK_CustomerHowFound">
+            <End Role="HowFound" EntitySet="HowFounds" />
+            <End Role="Customer" EntitySet="Customers" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CustomerInvoiceMethod" Association="db.FK_CustomerInvoiceMethod">
+            <End Role="InvoiceMethod" EntitySet="InvoiceMethods" />
+            <End Role="Customer" EntitySet="Customers" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CustomerPaymentMethod" Association="db.FK_CustomerPaymentMethod">
+            <End Role="PaymentMethod" EntitySet="PaymentMethods" />
+            <End Role="Customer" EntitySet="Customers" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CustomerQuitReason" Association="db.FK_CustomerQuitReason">
+            <End Role="QuitReason" EntitySet="QuitReasons" />
+            <End Role="Customer" EntitySet="Customers" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Route_Customer" Association="db.FK_Route_Customer">
+            <End Role="Customer" EntitySet="Customers" />
+            <End Role="Route" EntitySet="Routes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ServiceDetail_Customer" Association="db.FK_ServiceDetail_Customer">
+            <End Role="Customer" EntitySet="Customers" />
+            <End Role="ServiceDetail" EntitySet="ServiceDetails" />
+          </AssociationSet>
+          </EntityContainer>
+        <EntityType Name="EmailAddress">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CustomerId" Type="Int32" Nullable="false" />
+          <Property Name="IsPrimary" Type="Boolean" Nullable="false" />
+          <Property Name="Email" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="ServiceEmails" Type="Boolean" Nullable="false" />
+          <Property Name="Info" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Customer" Relationship="db.FK__EmailAddr__Custo__5441852A" FromRole="EmailAddress" ToRole="Customer" />
+        </EntityType>
+        <EntityType Name="ServiceDetail">
+          <Key>
+            <PropertyRef Name="ServiceDetailId" />
+          </Key>
+          <Property Name="ServiceDetailId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CustomerId" Type="Int32" Nullable="false" />
+          <Property Name="Day" Type="Int32" Nullable="false" />
+          <Property Name="Crew" Type="Int32" Nullable="false" />
+          <Property Name="ServiceId" Type="Int32" Nullable="false" />
+          <Property Name="Price" Type="Decimal" Nullable="false" Precision="19" Scale="4" />
+          <Property Name="QtyPrice" Type="Decimal" Nullable="false" Precision="19" Scale="4" />
+          <Property Name="Discount" Type="Decimal" Nullable="false" Precision="19" Scale="4" />
+          <Property Name="RequestDiscount" Type="Boolean" />
+          <Property Name="EstNum" Type="Decimal" Precision="7" Scale="1" />
+          <Property Name="AdditAmount" Type="Decimal" Nullable="false" Precision="19" Scale="4" />
+          <Property Name="NumDogs" Type="Int32" />
+          <Property Name="Qty" Type="Int32" Nullable="false" />
+          <Property Name="EmpPayAdj" Type="Decimal" Precision="19" Scale="4" />
+          <Property Name="AdditDogs" Type="Decimal" Precision="19" Scale="4" />
+          <Property Name="InvoiceAmount" Type="Decimal" Nullable="false" Precision="19" Scale="4" />
+          <Property Name="NonTaxable" Type="Boolean" Nullable="false" />
+          <Property Name="LastServiceDate" Type="DateTime" Precision="3" />
+          <Property Name="StartServiceDate" Type="DateTime" Precision="3" />
+          <Property Name="LastRouteDate" Type="DateTime" Precision="3" />
+          <Property Name="CountDown" Type="Int16" Nullable="false" />
+          <Property Name="ServicePackageId" Type="Int32" />
+          <NavigationProperty Name="Service" Relationship="db.FK_ServiceDetail_Service" FromRole="ServiceDetail" ToRole="Service" />
+          <NavigationProperty Name="Customer" Relationship="db.FK_ServiceDetail_Customer" FromRole="ServiceDetail" ToRole="Customer" />
+        </EntityType>
+        <EntityType Name="Service">
+          <Key>
+            <PropertyRef Name="ServiceId" />
+          </Key>
+          <Property Name="ServiceId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Description" Type="String" MaxLength="32" FixedLength="false" Unicode="false" />
+          <Property Name="Price" Type="Decimal" Precision="19" Scale="4" />
+          <Property Name="QtyPrice" Type="Decimal" Precision="19" Scale="4" />
+          <Property Name="DisplayOrder" Type="Int32" />
+          <Property Name="Active" Type="Boolean" />
+          <Property Name="AutoPop" Type="Boolean" Nullable="false" />
+          <Property Name="ExcludeEmpPay" Type="Boolean" Nullable="false" />
+          <Property Name="AdditDogs" Type="Decimal" Precision="19" Scale="4" />
+          <Property Name="FlatEmpPayAmt" Type="Decimal" Nullable="false" Precision="19" Scale="4" />
+          <Property Name="QtyFlatPayAmt" Type="Decimal" Nullable="false" Precision="19" Scale="4" />
+          <Property Name="Freq" Type="Int32" Nullable="false" />
+          <Property Name="CountDown" Type="Int16" />
+          <NavigationProperty Name="ServiceDetails" Relationship="db.FK_ServiceDetail_Service" FromRole="Service" ToRole="ServiceDetail" />
+          <NavigationProperty Name="Frequency" Relationship="db.FK_Service_Freq" FromRole="Service" ToRole="Frequency" />
+        </EntityType>
+        <Association Name="FK_ServiceDetail_Service">
+          <End Type="db.Service" Role="Service" Multiplicity="1" />
+          <End Type="db.ServiceDetail" Role="ServiceDetail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Service">
+              <PropertyRef Name="ServiceId" />
+            </Principal>
+            <Dependent Role="ServiceDetail">
+              <PropertyRef Name="ServiceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="DropDownValue">
+          <Key>
+            <PropertyRef Name="DropDownValueId" />
+          </Key>
+          <Property Name="DropDownValueId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="DropDownName" Type="String" Nullable="false" MaxLength="32" FixedLength="false" Unicode="false" />
+          <Property Name="DropDownValue1" Type="String" MaxLength="32" FixedLength="false" Unicode="false" />
+          <Property Name="DropDownText" Type="String" MaxLength="32" FixedLength="false" Unicode="false" />
+          <Property Name="Display" Type="Boolean" />
+        </EntityType>
+        <EntityType Name="HowFound">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Display" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="Customers" Relationship="db.FK_CustomerHowFound" FromRole="HowFound" ToRole="Customer" />
+        </EntityType>
+        <EntityType Name="InvoiceMethod">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Display" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="Customers" Relationship="db.FK_CustomerInvoiceMethod" FromRole="InvoiceMethod" ToRole="Customer" />
+        </EntityType>
+        <EntityType Name="PaymentMethod">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Display" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="Customers" Relationship="db.FK_CustomerPaymentMethod" FromRole="PaymentMethod" ToRole="Customer" />
+        </EntityType>
+        <EntityType Name="QuitReason">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Display" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="Customers" Relationship="db.FK_CustomerQuitReason" FromRole="QuitReason" ToRole="Customer" />
+        </EntityType>
+        <EntityType Name="Route">
+          <Key>
+            <PropertyRef Name="RouteID" />
+          </Key>
+          <Property Name="RouteID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Date" Type="DateTime" Precision="0" />
+          <Property Name="CustomerID" Type="Int32" Nullable="false" />
+          <Property Name="EmployeeId" Type="Int32" />
+          <Property Name="Status" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="WeeklyRate" Type="Decimal" Precision="10" Scale="4" />
+          <Property Name="EmpPerc" Type="Single" />
+          <Property Name="EmpAmount" Type="Decimal" Precision="10" Scale="4" />
+          <Property Name="ServiceId" Type="Int32" />
+          <Property Name="Discount" Type="Decimal" Precision="10" Scale="4" />
+          <Property Name="LastServiceDate" Type="DateTime" Precision="3" />
+          <Property Name="StartServiceDate" Type="DateTime" Precision="3" />
+          <Property Name="ServiceDetailId" Type="Int32" />
+          <Property Name="EstNum" Type="Decimal" Precision="7" Scale="1" />
+          <NavigationProperty Name="Customer" Relationship="db.FK_Route_Customer" FromRole="Route" ToRole="Customer" />
+        </EntityType>
+        <EntityType Name="RouteWeek">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RouteMonth" Type="DateTime" Precision="3" />
+          <Property Name="RouteWeek1" Type="Byte" />
+          <Property Name="WeekStart" Type="DateTime" Precision="3" />
+          <Property Name="WeekEnd" Type="DateTime" annotation:StoreGeneratedPattern="Computed" Precision="3" />
+        </EntityType>
+        <EntityType Name="Frequency">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Services" Relationship="db.FK_Service_Freq" FromRole="Frequency" ToRole="Service" />
+        </EntityType>
+        <Association Name="FK_Service_Freq">
+          <End Type="db.Frequency" Role="Frequency" Multiplicity="1" />
+          <End Type="db.Service" Role="Service" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Frequency">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Service">
+              <PropertyRef Name="Freq" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="CustomerHistory">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CustomerId" Type="Int32" />
+          <Property Name="EmployeeId" Type="Int32" />
+          <Property Name="Date" Type="DateTime" Precision="3" />
+          <Property Name="Type" Type="Int32" />
+          <Property Name="Notes" Type="String" MaxLength="128" FixedLength="false" Unicode="false" />
+          <Property Name="Field" Type="String" MaxLength="32" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Customer" Relationship="db.FK_CustomerHistory_Customer" FromRole="CustomerHistory" ToRole="Customer" />
+        </EntityType>
+        <EntityType Name="CompanyInfo">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Value" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="EmailAccount">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="LocalPart" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="Domain" Type="Int32" Nullable="false" />
+          <Property Name="DisplayName" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="Password" Type="String" Nullable="false" MaxLength="512" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="EmailDomain" Relationship="db.FK_EmailDomain" FromRole="EmailAccount" ToRole="EmailDomain" />
+          <NavigationProperty Name="EmailTemplates" Relationship="db.FK_EmailTemplate_EmailAccount" FromRole="EmailAccount" ToRole="EmailTemplate" />
+        </EntityType>
+        <EntityType Name="EmailDomain">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Domain" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="EmailServerId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="EmailAccounts" Relationship="db.FK_EmailDomain" FromRole="EmailDomain" ToRole="EmailAccount" />
+          <NavigationProperty Name="EmailServer" Relationship="db.FK_EmailServerId" FromRole="EmailDomain" ToRole="EmailServer" />
+        </EntityType>
+        <EntityType Name="EmailServer">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Server" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="Port" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="EmailDomains" Relationship="db.FK_EmailServerId" FromRole="EmailServer" ToRole="EmailDomain" />
+        </EntityType>
+        <EntityType Name="EmailTemplate">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="EmailTypeId" Type="Int32" Nullable="false" />
+          <Property Name="Title" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="EmailAccountId" Type="Int32" Nullable="false" />
+          <Property Name="BodyTemplate" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="EmailAccount" Relationship="db.FK_EmailTemplate_EmailAccount" FromRole="EmailTemplate" ToRole="EmailAccount" />
+          <NavigationProperty Name="EmailType" Relationship="db.FK_EmailTemplate_EmailType" FromRole="EmailTemplate" ToRole="EmailType" />
+        </EntityType>
+        <EntityType Name="EmailType">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="EmailTemplates" Relationship="db.FK_EmailTemplate_EmailType" FromRole="EmailType" ToRole="EmailTemplate" />
+        </EntityType>
+        <Association Name="FK_EmailDomain">
+          <End Type="db.EmailDomain" Role="EmailDomain" Multiplicity="1" />
+          <End Type="db.EmailAccount" Role="EmailAccount" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="EmailDomain">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="EmailAccount">
+              <PropertyRef Name="Domain" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_EmailTemplate_EmailAccount">
+          <End Type="db.EmailAccount" Role="EmailAccount" Multiplicity="1" />
+          <End Type="db.EmailTemplate" Role="EmailTemplate" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="EmailAccount">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="EmailTemplate">
+              <PropertyRef Name="EmailAccountId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_EmailServerId">
+          <End Type="db.EmailServer" Role="EmailServer" Multiplicity="1" />
+          <End Type="db.EmailDomain" Role="EmailDomain" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="EmailServer">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="EmailDomain">
+              <PropertyRef Name="EmailServerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_EmailTemplate_EmailType">
+          <End Type="db.EmailType" Role="EmailType" Multiplicity="1" />
+          <End Type="db.EmailTemplate" Role="EmailTemplate" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="EmailType">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="EmailTemplate">
+              <PropertyRef Name="EmailTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="Employee">
+          <Key>
+            <PropertyRef Name="EmployeeID" />
+          </Key>
+          <Property Name="EmployeeID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Crew" Type="Int32" />
+          <Property Name="FirstName" Type="String" MaxLength="32" FixedLength="false" Unicode="false" />
+          <Property Name="LastName" Type="String" MaxLength="32" FixedLength="false" Unicode="false" />
+          <Property Name="Address" Type="String" MaxLength="128" FixedLength="false" Unicode="false" />
+          <Property Name="City" Type="String" MaxLength="32" FixedLength="false" Unicode="false" />
+          <Property Name="State" Type="String" MaxLength="2" FixedLength="false" Unicode="false" />
+          <Property Name="Zip" Type="String" MaxLength="12" FixedLength="false" Unicode="false" />
+          <Property Name="HomePhone" Type="String" MaxLength="16" FixedLength="false" Unicode="false" />
+          <Property Name="MobilePhone" Type="String" MaxLength="16" FixedLength="false" Unicode="false" />
+          <Property Name="TruckID" Type="String" MaxLength="16" FixedLength="false" Unicode="false" />
+          <Property Name="CompanyPhone" Type="String" MaxLength="16" FixedLength="false" Unicode="false" />
+          <Property Name="StartDate" Type="DateTime" Precision="3" />
+          <Property Name="Route" Type="String" MaxLength="16" FixedLength="false" Unicode="false" />
+          <Property Name="PayPerc" Type="Single" Nullable="false" />
+          <Property Name="Status" Type="String" MaxLength="1" FixedLength="false" Unicode="false" />
+          <Property Name="Email" Type="String" MaxLength="128" FixedLength="false" Unicode="false" />
+          <Property Name="Password" Type="String" MaxLength="128" FixedLength="false" Unicode="false" />
+          <Property Name="AcceptsTasks" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Note">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CustomerId" Type="Int32" Nullable="false" />
+          <Property Name="NoteTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Content" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Customer" Relationship="db.FK__Note__CustomerId__65370702" FromRole="Note" ToRole="Customer" />
         </EntityType>
         <EntityType Name="Customer">
           <Key>
@@ -210,21 +1114,19 @@
           <Property Name="SpouseFirstName" Type="String" MaxLength="64" FixedLength="false" Unicode="false" />
           <Property Name="SpouseLastName" Type="String" MaxLength="64" FixedLength="false" Unicode="false" />
           <Property Name="Code" Type="String" MaxLength="16" FixedLength="false" Unicode="false" />
-          <Property Name="Email" Type="String" MaxLength="64" FixedLength="false" Unicode="false" />
           <Property Name="Status" Type="String" MaxLength="1" FixedLength="false" Unicode="false" />
           <Property Name="Type" Type="String" MaxLength="1" FixedLength="false" Unicode="false" />
           <Property Name="Combo" Type="String" MaxLength="32" FixedLength="false" Unicode="false" />
           <Property Name="FinalServiceDate" Type="DateTime" Precision="0" />
-          <Property Name="WhyQuit" Type="Int32" />
+          <Property Name="QuitReasonId" Type="Int32" />
           <Property Name="WhyQuitSpecify" Type="String" MaxLength="32" FixedLength="false" Unicode="false" />
           <Property Name="RouteStartDate" Type="DateTime" Precision="0" />
           <Property Name="StartDate" Type="DateTime" Precision="0" />
-          <Property Name="HowFound" Type="Int32" />
+          <Property Name="HowFoundId" Type="Int32" />
           <Property Name="HowFoundSpecify" Type="String" MaxLength="32" FixedLength="false" Unicode="false" />
           <Property Name="GPS" Type="String" MaxLength="32" FixedLength="false" Unicode="false" />
-          <Property Name="PaymentMethod" Type="Int32" />
-          <Property Name="InvoiceMethod" Type="Int32" />
-          <Property Name="TurnOffServiceEmails" Type="Boolean" />
+          <Property Name="PaymentMethodId" Type="Int32" />
+          <Property Name="InvoiceMethodId" Type="Int32" />
           <Property Name="QBId" Type="String" MaxLength="8" FixedLength="false" Unicode="false" />
           <Property Name="QbSyncToken" Type="String" MaxLength="8" FixedLength="false" Unicode="false" />
           <Property Name="QBBalance" Type="Decimal" Precision="19" Scale="4" />
@@ -238,60 +1140,36 @@
           <Property Name="LateLastSent" Type="DateTime" Precision="0" />
           <Property Name="CallOfficeLastSent" Type="DateTime" Precision="0" />
           <Property Name="FinalNoticeLastSent" Type="DateTime" Precision="0" />
-          <Property Name="CreditCardOnFile" Type="Boolean" />
-          <Property Name="CustomerSetup" Type="Boolean" />
-          <Property Name="MeetScheduled" Type="Boolean" />
-          <Property Name="MeetPerformed" Type="Boolean" />
+          <Property Name="CreditCardOnFile" Type="Boolean" Nullable="false" />
+          <Property Name="CustomerSetup" Type="Boolean" Nullable="false" />
+          <Property Name="MeetScheduled" Type="Boolean" Nullable="false" />
+          <Property Name="MeetPerformed" Type="Boolean" Nullable="false" />
           <Property Name="MeetSchDate" Type="DateTime" Precision="0" />
           <Property Name="MeetSchTime" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
           <Property Name="FMNotes" Type="String" MaxLength="128" FixedLength="false" Unicode="false" />
-          <Property Name="Email2" Type="String" MaxLength="64" FixedLength="false" Unicode="false" />
-          <Property Name="TurnOffServiceEmail2" Type="Boolean" />
           <Property Name="BulkEmailDate" Type="DateTime" Precision="0" />
           <Property Name="ContractRenewalTerm" Type="Int32" />
           <Property Name="ContractCancellationTerm" Type="Int32" />
           <Property Name="LastUpdate" Type="DateTime" Precision="0" />
           <Property Name="LastQbUpdate" Type="DateTime" Precision="0" />
-          <NavigationProperty Name="Addresses" Relationship="Self.FK__Address__Custome__3E52440B" FromRole="Customer" ToRole="Address" />
-          <NavigationProperty Name="Notes" Relationship="Self.FK__Notes__CustomerI__4AB81AF0" FromRole="Customer" ToRole="Notes" />
-          <NavigationProperty Name="Pauses" Relationship="Self.FK__Pause__CustomerI__29572725" FromRole="Customer" ToRole="Pause" />
-          <NavigationProperty Name="Phones" Relationship="Self.FK__Phone__CustomerI__440B1D61" FromRole="Customer" ToRole="Phone" />
-        </EntityType>
-        <EntityType Name="Note">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="CustomerId" Type="Int32" Nullable="false" />
-          <Property Name="Note1" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="Customer" Relationship="Self.FK__Notes__CustomerI__4AB81AF0" FromRole="Notes" ToRole="Customer" />
-        </EntityType>
-        <EntityType Name="Pause">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="CustomerId" Type="Int32" Nullable="false" />
-          <Property Name="PauseDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="RestartDate" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="Customer" Relationship="Self.FK__Pause__CustomerI__29572725" FromRole="Pause" ToRole="Customer" />
-        </EntityType>
-        <EntityType Name="Phone">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="CustomerId" Type="Int32" Nullable="false" />
-          <Property Name="PhoneType" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="Number" Type="String" MaxLength="32" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="Note" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="Customer" Relationship="Self.FK__Phone__CustomerI__440B1D61" FromRole="Phone" ToRole="Customer" />
+          <NavigationProperty Name="Addresses" Relationship="db.FK__Address__Custome__3E52440B" FromRole="Customer" ToRole="Address" />
+          <NavigationProperty Name="EmailAddresses" Relationship="db.FK__EmailAddr__Custo__5441852A" FromRole="Customer" ToRole="EmailAddress" />
+          <NavigationProperty Name="Notes" Relationship="db.FK__Note__CustomerId__65370702" FromRole="Customer" ToRole="Note" />
+          <NavigationProperty Name="Pauses" Relationship="db.FK__Pause__CustomerI__29572725" FromRole="Customer" ToRole="Pause" />
+          <NavigationProperty Name="Phones" Relationship="db.FK__Phone__CustomerI__440B1D61" FromRole="Customer" ToRole="Phone" />
+          <NavigationProperty Name="CustomerHistories" Relationship="db.FK_CustomerHistory_Customer" FromRole="Customer" ToRole="CustomerHistory" />
+          <NavigationProperty Name="HowFound" Relationship="db.FK_CustomerHowFound" FromRole="Customer" ToRole="HowFound" />
+          <NavigationProperty Name="InvoiceMethod" Relationship="db.FK_CustomerInvoiceMethod" FromRole="Customer" ToRole="InvoiceMethod" />
+          <NavigationProperty Name="PaymentMethod" Relationship="db.FK_CustomerPaymentMethod" FromRole="Customer" ToRole="PaymentMethod" />
+          <NavigationProperty Name="QuitReason" Relationship="db.FK_CustomerQuitReason" FromRole="Customer" ToRole="QuitReason" />
+          <NavigationProperty Name="Routes" Relationship="db.FK_Route_Customer" FromRole="Customer" ToRole="Route" />
+          <NavigationProperty Name="ServiceDetails" Relationship="db.FK_ServiceDetail_Customer" FromRole="Customer" ToRole="ServiceDetail" />
         </EntityType>
         <Association Name="FK__Address__Custome__3E52440B">
-          <End Role="Customer" Type="Self.Customer" Multiplicity="1">
+          <End Type="db.Customer" Role="Customer" Multiplicity="1">
             <OnDelete Action="Cascade" />
           </End>
-          <End Role="Address" Type="Self.Address" Multiplicity="*" />
+          <End Type="db.Address" Role="Address" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Customer">
               <PropertyRef Name="CustomerId" />
@@ -301,25 +1179,39 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Notes__CustomerI__4AB81AF0">
-          <End Role="Customer" Type="Self.Customer" Multiplicity="1">
+        <Association Name="FK__EmailAddr__Custo__5441852A">
+          <End Type="db.Customer" Role="Customer" Multiplicity="1">
             <OnDelete Action="Cascade" />
           </End>
-          <End Role="Notes" Type="Self.Note" Multiplicity="*" />
+          <End Type="db.EmailAddress" Role="EmailAddress" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Customer">
               <PropertyRef Name="CustomerId" />
             </Principal>
-            <Dependent Role="Notes">
+            <Dependent Role="EmailAddress">
+              <PropertyRef Name="CustomerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Note__CustomerId__65370702">
+          <End Type="db.Customer" Role="Customer" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="db.Note" Role="Note" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Customer">
+              <PropertyRef Name="CustomerId" />
+            </Principal>
+            <Dependent Role="Note">
               <PropertyRef Name="CustomerId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
         <Association Name="FK__Pause__CustomerI__29572725">
-          <End Role="Customer" Type="Self.Customer" Multiplicity="1">
+          <End Type="db.Customer" Role="Customer" Multiplicity="1">
             <OnDelete Action="Cascade" />
           </End>
-          <End Role="Pause" Type="Self.Pause" Multiplicity="*" />
+          <End Type="db.Pause" Role="Pause" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Customer">
               <PropertyRef Name="CustomerId" />
@@ -330,10 +1222,10 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK__Phone__CustomerI__440B1D61">
-          <End Role="Customer" Type="Self.Customer" Multiplicity="1">
+          <End Type="db.Customer" Role="Customer" Multiplicity="1">
             <OnDelete Action="Cascade" />
           </End>
-          <End Role="Phone" Type="Self.Phone" Multiplicity="*" />
+          <End Type="db.Phone" Role="Phone" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Customer">
               <PropertyRef Name="CustomerId" />
@@ -343,30 +1235,91 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityContainer Name="pileEntities" annotation:LazyLoadingEnabled="true">
-          <EntitySet Name="Addresses" EntityType="Self.Address" />
-          <EntitySet Name="Customers" EntityType="Self.Customer" />
-          <EntitySet Name="Notes" EntityType="Self.Note" />
-          <EntitySet Name="Pauses" EntityType="Self.Pause" />
-          <EntitySet Name="Phones" EntityType="Self.Phone" />
-          <AssociationSet Name="FK__Address__Custome__3E52440B" Association="Self.FK__Address__Custome__3E52440B">
-            <End Role="Customer" EntitySet="Customers" />
-            <End Role="Address" EntitySet="Addresses" />
-          </AssociationSet>
-          <AssociationSet Name="FK__Notes__CustomerI__4AB81AF0" Association="Self.FK__Notes__CustomerI__4AB81AF0">
-            <End Role="Customer" EntitySet="Customers" />
-            <End Role="Notes" EntitySet="Notes" />
-          </AssociationSet>
-          <AssociationSet Name="FK__Pause__CustomerI__29572725" Association="Self.FK__Pause__CustomerI__29572725">
-            <End Role="Customer" EntitySet="Customers" />
-            <End Role="Pause" EntitySet="Pauses" />
-          </AssociationSet>
-          <AssociationSet Name="FK__Phone__CustomerI__440B1D61" Association="Self.FK__Phone__CustomerI__440B1D61">
-            <End Role="Customer" EntitySet="Customers" />
-            <End Role="Phone" EntitySet="Phones" />
-          </AssociationSet>
-        </EntityContainer>
-      </Schema>
+        <Association Name="FK_CustomerHistory_Customer">
+          <End Type="db.Customer" Role="Customer" Multiplicity="0..1" />
+          <End Type="db.CustomerHistory" Role="CustomerHistory" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Customer">
+              <PropertyRef Name="CustomerId" />
+            </Principal>
+            <Dependent Role="CustomerHistory">
+              <PropertyRef Name="CustomerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CustomerHowFound">
+          <End Type="db.HowFound" Role="HowFound" Multiplicity="0..1" />
+          <End Type="db.Customer" Role="Customer" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="HowFound">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Customer">
+              <PropertyRef Name="HowFoundId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CustomerInvoiceMethod">
+          <End Type="db.InvoiceMethod" Role="InvoiceMethod" Multiplicity="0..1" />
+          <End Type="db.Customer" Role="Customer" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="InvoiceMethod">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Customer">
+              <PropertyRef Name="InvoiceMethodId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CustomerPaymentMethod">
+          <End Type="db.PaymentMethod" Role="PaymentMethod" Multiplicity="0..1" />
+          <End Type="db.Customer" Role="Customer" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PaymentMethod">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Customer">
+              <PropertyRef Name="PaymentMethodId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CustomerQuitReason">
+          <End Type="db.QuitReason" Role="QuitReason" Multiplicity="0..1" />
+          <End Type="db.Customer" Role="Customer" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="QuitReason">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Customer">
+              <PropertyRef Name="QuitReasonId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Route_Customer">
+          <End Type="db.Customer" Role="Customer" Multiplicity="1" />
+          <End Type="db.Route" Role="Route" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Customer">
+              <PropertyRef Name="CustomerId" />
+            </Principal>
+            <Dependent Role="Route">
+              <PropertyRef Name="CustomerID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ServiceDetail_Customer">
+          <End Type="db.Customer" Role="Customer" Multiplicity="1" />
+          <End Type="db.ServiceDetail" Role="ServiceDetail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Customer">
+              <PropertyRef Name="CustomerId" />
+            </Principal>
+            <Dependent Role="ServiceDetail">
+              <PropertyRef Name="CustomerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
@@ -383,71 +1336,6 @@
                 <ScalarProperty Name="City" ColumnName="City" />
                 <ScalarProperty Name="State" ColumnName="State" />
                 <ScalarProperty Name="Zip" ColumnName="Zip" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Customers">
-            <EntityTypeMapping TypeName="db.Customer">
-              <MappingFragment StoreEntitySet="Customer">
-                <ScalarProperty Name="CustomerId" ColumnName="CustomerId" />
-                <ScalarProperty Name="Flag" ColumnName="Flag" />
-                <ScalarProperty Name="LatePmt" ColumnName="LatePmt" />
-                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
-                <ScalarProperty Name="LastName" ColumnName="LastName" />
-                <ScalarProperty Name="SpouseFirstName" ColumnName="SpouseFirstName" />
-                <ScalarProperty Name="SpouseLastName" ColumnName="SpouseLastName" />
-                <ScalarProperty Name="Code" ColumnName="Code" />
-                <ScalarProperty Name="Email" ColumnName="Email" />
-                <ScalarProperty Name="Status" ColumnName="Status" />
-                <ScalarProperty Name="Type" ColumnName="Type" />
-                <ScalarProperty Name="Combo" ColumnName="Combo" />
-                <ScalarProperty Name="FinalServiceDate" ColumnName="FinalServiceDate" />
-                <ScalarProperty Name="WhyQuit" ColumnName="WhyQuit" />
-                <ScalarProperty Name="WhyQuitSpecify" ColumnName="WhyQuitSpecify" />
-                <ScalarProperty Name="RouteStartDate" ColumnName="RouteStartDate" />
-                <ScalarProperty Name="StartDate" ColumnName="StartDate" />
-                <ScalarProperty Name="HowFound" ColumnName="HowFound" />
-                <ScalarProperty Name="HowFoundSpecify" ColumnName="HowFoundSpecify" />
-                <ScalarProperty Name="GPS" ColumnName="GPS" />
-                <ScalarProperty Name="PaymentMethod" ColumnName="PaymentMethod" />
-                <ScalarProperty Name="InvoiceMethod" ColumnName="InvoiceMethod" />
-                <ScalarProperty Name="TurnOffServiceEmails" ColumnName="TurnOffServiceEmails" />
-                <ScalarProperty Name="QBId" ColumnName="QBId" />
-                <ScalarProperty Name="QbSyncToken" ColumnName="QbSyncToken" />
-                <ScalarProperty Name="QBBalance" ColumnName="QBBalance" />
-                <ScalarProperty Name="QBTotalBalance" ColumnName="QBTotalBalance" />
-                <ScalarProperty Name="QBInvoiceNumber" ColumnName="QBInvoiceNumber" />
-                <ScalarProperty Name="QBSubTotal" ColumnName="QBSubTotal" />
-                <ScalarProperty Name="QBLastInvoiceDate" ColumnName="QBLastInvoiceDate" />
-                <ScalarProperty Name="DBStartDate" ColumnName="DBStartDate" />
-                <ScalarProperty Name="DBEndDate" ColumnName="DBEndDate" />
-                <ScalarProperty Name="EmailStatus" ColumnName="EmailStatus" />
-                <ScalarProperty Name="LateLastSent" ColumnName="LateLastSent" />
-                <ScalarProperty Name="CallOfficeLastSent" ColumnName="CallOfficeLastSent" />
-                <ScalarProperty Name="FinalNoticeLastSent" ColumnName="FinalNoticeLastSent" />
-                <ScalarProperty Name="CreditCardOnFile" ColumnName="CreditCardOnFile" />
-                <ScalarProperty Name="CustomerSetup" ColumnName="CustomerSetup" />
-                <ScalarProperty Name="MeetScheduled" ColumnName="MeetScheduled" />
-                <ScalarProperty Name="MeetPerformed" ColumnName="MeetPerformed" />
-                <ScalarProperty Name="MeetSchDate" ColumnName="MeetSchDate" />
-                <ScalarProperty Name="MeetSchTime" ColumnName="MeetSchTime" />
-                <ScalarProperty Name="FMNotes" ColumnName="FMNotes" />
-                <ScalarProperty Name="Email2" ColumnName="Email2" />
-                <ScalarProperty Name="TurnOffServiceEmail2" ColumnName="TurnOffServiceEmail2" />
-                <ScalarProperty Name="BulkEmailDate" ColumnName="BulkEmailDate" />
-                <ScalarProperty Name="ContractRenewalTerm" ColumnName="ContractRenewalTerm" />
-                <ScalarProperty Name="ContractCancellationTerm" ColumnName="ContractCancellationTerm" />
-                <ScalarProperty Name="LastUpdate" ColumnName="LastUpdate" />
-                <ScalarProperty Name="LastQbUpdate" ColumnName="LastQbUpdate" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Notes">
-            <EntityTypeMapping TypeName="db.Note">
-              <MappingFragment StoreEntitySet="Notes">
-                <ScalarProperty Name="Id" ColumnName="Id" />
-                <ScalarProperty Name="CustomerId" ColumnName="CustomerId" />
-                <ScalarProperty Name="Note1" ColumnName="Note" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -472,7 +1360,309 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-        </EntityContainerMapping>
+          <EntitySetMapping Name="EmailAddresses">
+            <EntityTypeMapping TypeName="db.EmailAddress">
+              <MappingFragment StoreEntitySet="EmailAddress">
+                <ScalarProperty Name="Info" ColumnName="Info" />
+                <ScalarProperty Name="ServiceEmails" ColumnName="ServiceEmails" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="IsPrimary" ColumnName="IsPrimary" />
+                <ScalarProperty Name="CustomerId" ColumnName="CustomerId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ServiceDetails">
+            <EntityTypeMapping TypeName="db.ServiceDetail">
+              <MappingFragment StoreEntitySet="ServiceDetail">
+                <ScalarProperty Name="ServicePackageId" ColumnName="ServicePackageId" />
+                <ScalarProperty Name="CountDown" ColumnName="CountDown" />
+                <ScalarProperty Name="LastRouteDate" ColumnName="LastRouteDate" />
+                <ScalarProperty Name="StartServiceDate" ColumnName="StartServiceDate" />
+                <ScalarProperty Name="LastServiceDate" ColumnName="LastServiceDate" />
+                <ScalarProperty Name="NonTaxable" ColumnName="NonTaxable" />
+                <ScalarProperty Name="InvoiceAmount" ColumnName="InvoiceAmount" />
+                <ScalarProperty Name="AdditDogs" ColumnName="AdditDogs" />
+                <ScalarProperty Name="EmpPayAdj" ColumnName="EmpPayAdj" />
+                <ScalarProperty Name="Qty" ColumnName="Qty" />
+                <ScalarProperty Name="NumDogs" ColumnName="NumDogs" />
+                <ScalarProperty Name="AdditAmount" ColumnName="AdditAmount" />
+                <ScalarProperty Name="EstNum" ColumnName="EstNum" />
+                <ScalarProperty Name="RequestDiscount" ColumnName="RequestDiscount" />
+                <ScalarProperty Name="Discount" ColumnName="Discount" />
+                <ScalarProperty Name="QtyPrice" ColumnName="QtyPrice" />
+                <ScalarProperty Name="Price" ColumnName="Price" />
+                <ScalarProperty Name="ServiceId" ColumnName="ServiceId" />
+                <ScalarProperty Name="Crew" ColumnName="Crew" />
+                <ScalarProperty Name="Day" ColumnName="Day" />
+                <ScalarProperty Name="CustomerId" ColumnName="CustomerId" />
+                <ScalarProperty Name="ServiceDetailId" ColumnName="ServiceDetailId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Services">
+            <EntityTypeMapping TypeName="db.Service">
+              <MappingFragment StoreEntitySet="Service">
+                <ScalarProperty Name="CountDown" ColumnName="CountDown" />
+                <ScalarProperty Name="Freq" ColumnName="Freq" />
+                <ScalarProperty Name="QtyFlatPayAmt" ColumnName="QtyFlatPayAmt" />
+                <ScalarProperty Name="FlatEmpPayAmt" ColumnName="FlatEmpPayAmt" />
+                <ScalarProperty Name="AdditDogs" ColumnName="AdditDogs" />
+                <ScalarProperty Name="ExcludeEmpPay" ColumnName="ExcludeEmpPay" />
+                <ScalarProperty Name="AutoPop" ColumnName="AutoPop" />
+                <ScalarProperty Name="Active" ColumnName="Active" />
+                <ScalarProperty Name="DisplayOrder" ColumnName="DisplayOrder" />
+                <ScalarProperty Name="QtyPrice" ColumnName="QtyPrice" />
+                <ScalarProperty Name="Price" ColumnName="Price" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="ServiceId" ColumnName="ServiceId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DropDownValues">
+            <EntityTypeMapping TypeName="db.DropDownValue">
+              <MappingFragment StoreEntitySet="DropDownValues">
+                <ScalarProperty Name="Display" ColumnName="Display" />
+                <ScalarProperty Name="DropDownText" ColumnName="DropDownText" />
+                <ScalarProperty Name="DropDownValue1" ColumnName="DropDownValue" />
+                <ScalarProperty Name="DropDownName" ColumnName="DropDownName" />
+                <ScalarProperty Name="DropDownValueId" ColumnName="DropDownValueId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="HowFounds">
+            <EntityTypeMapping TypeName="db.HowFound">
+              <MappingFragment StoreEntitySet="HowFound">
+                <ScalarProperty Name="Display" ColumnName="Display" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="InvoiceMethods">
+            <EntityTypeMapping TypeName="db.InvoiceMethod">
+              <MappingFragment StoreEntitySet="InvoiceMethod">
+                <ScalarProperty Name="Display" ColumnName="Display" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PaymentMethods">
+            <EntityTypeMapping TypeName="db.PaymentMethod">
+              <MappingFragment StoreEntitySet="PaymentMethod">
+                <ScalarProperty Name="Display" ColumnName="Display" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="QuitReasons">
+            <EntityTypeMapping TypeName="db.QuitReason">
+              <MappingFragment StoreEntitySet="QuitReason">
+                <ScalarProperty Name="Display" ColumnName="Display" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Routes">
+            <EntityTypeMapping TypeName="db.Route">
+              <MappingFragment StoreEntitySet="Route">
+                <ScalarProperty Name="EstNum" ColumnName="EstNum" />
+                <ScalarProperty Name="ServiceDetailId" ColumnName="ServiceDetailId" />
+                <ScalarProperty Name="StartServiceDate" ColumnName="StartServiceDate" />
+                <ScalarProperty Name="LastServiceDate" ColumnName="LastServiceDate" />
+                <ScalarProperty Name="Discount" ColumnName="Discount" />
+                <ScalarProperty Name="ServiceId" ColumnName="ServiceId" />
+                <ScalarProperty Name="EmpAmount" ColumnName="EmpAmount" />
+                <ScalarProperty Name="EmpPerc" ColumnName="EmpPerc" />
+                <ScalarProperty Name="WeeklyRate" ColumnName="WeeklyRate" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="EmployeeId" ColumnName="EmployeeId" />
+                <ScalarProperty Name="CustomerID" ColumnName="CustomerID" />
+                <ScalarProperty Name="Date" ColumnName="Date" />
+                <ScalarProperty Name="RouteID" ColumnName="RouteID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RouteWeeks">
+            <EntityTypeMapping TypeName="db.RouteWeek">
+              <MappingFragment StoreEntitySet="RouteWeek">
+                <ScalarProperty Name="WeekEnd" ColumnName="WeekEnd" />
+                <ScalarProperty Name="WeekStart" ColumnName="WeekStart" />
+                <ScalarProperty Name="RouteWeek1" ColumnName="RouteWeek" />
+                <ScalarProperty Name="RouteMonth" ColumnName="RouteMonth" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Frequencies">
+            <EntityTypeMapping TypeName="db.Frequency">
+              <MappingFragment StoreEntitySet="Frequency">
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CustomerHistories">
+            <EntityTypeMapping TypeName="db.CustomerHistory">
+              <MappingFragment StoreEntitySet="CustomerHistory">
+                <ScalarProperty Name="Field" ColumnName="Field" />
+                <ScalarProperty Name="Notes" ColumnName="Notes" />
+                <ScalarProperty Name="Type" ColumnName="Type" />
+                <ScalarProperty Name="Date" ColumnName="Date" />
+                <ScalarProperty Name="EmployeeId" ColumnName="EmployeeId" />
+                <ScalarProperty Name="CustomerId" ColumnName="CustomerId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CompanyInfoes">
+            <EntityTypeMapping TypeName="db.CompanyInfo">
+              <MappingFragment StoreEntitySet="CompanyInfo">
+                <ScalarProperty Name="Value" ColumnName="Value" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EmailAccounts">
+            <EntityTypeMapping TypeName="db.EmailAccount">
+              <MappingFragment StoreEntitySet="EmailAccount">
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="DisplayName" ColumnName="DisplayName" />
+                <ScalarProperty Name="Domain" ColumnName="Domain" />
+                <ScalarProperty Name="LocalPart" ColumnName="LocalPart" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EmailDomains">
+            <EntityTypeMapping TypeName="db.EmailDomain">
+              <MappingFragment StoreEntitySet="EmailDomain">
+                <ScalarProperty Name="EmailServerId" ColumnName="EmailServerId" />
+                <ScalarProperty Name="Domain" ColumnName="Domain" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EmailServers">
+            <EntityTypeMapping TypeName="db.EmailServer">
+              <MappingFragment StoreEntitySet="EmailServer">
+                <ScalarProperty Name="Port" ColumnName="Port" />
+                <ScalarProperty Name="Server" ColumnName="Server" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EmailTemplates">
+            <EntityTypeMapping TypeName="db.EmailTemplate">
+              <MappingFragment StoreEntitySet="EmailTemplate">
+                <ScalarProperty Name="BodyTemplate" ColumnName="BodyTemplate" />
+                <ScalarProperty Name="EmailAccountId" ColumnName="EmailAccountId" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="EmailTypeId" ColumnName="EmailTypeId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EmailTypes">
+            <EntityTypeMapping TypeName="db.EmailType">
+              <MappingFragment StoreEntitySet="EmailType">
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Employees">
+            <EntityTypeMapping TypeName="db.Employee">
+              <MappingFragment StoreEntitySet="Employees">
+                <ScalarProperty Name="AcceptsTasks" ColumnName="AcceptsTasks" />
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="PayPerc" ColumnName="PayPerc" />
+                <ScalarProperty Name="Route" ColumnName="Route" />
+                <ScalarProperty Name="StartDate" ColumnName="StartDate" />
+                <ScalarProperty Name="CompanyPhone" ColumnName="CompanyPhone" />
+                <ScalarProperty Name="TruckID" ColumnName="TruckID" />
+                <ScalarProperty Name="MobilePhone" ColumnName="MobilePhone" />
+                <ScalarProperty Name="HomePhone" ColumnName="HomePhone" />
+                <ScalarProperty Name="Zip" ColumnName="Zip" />
+                <ScalarProperty Name="State" ColumnName="State" />
+                <ScalarProperty Name="City" ColumnName="City" />
+                <ScalarProperty Name="Address" ColumnName="Address" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="Crew" ColumnName="Crew" />
+                <ScalarProperty Name="EmployeeID" ColumnName="EmployeeID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Notes">
+            <EntityTypeMapping TypeName="db.Note">
+              <MappingFragment StoreEntitySet="Note">
+                <ScalarProperty Name="Content" ColumnName="Content" />
+                <ScalarProperty Name="NoteTime" ColumnName="NoteTime" />
+                <ScalarProperty Name="CustomerId" ColumnName="CustomerId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Customers">
+            <EntityTypeMapping TypeName="db.Customer">
+              <MappingFragment StoreEntitySet="Customer">
+                <ScalarProperty Name="LastQbUpdate" ColumnName="LastQbUpdate" />
+                <ScalarProperty Name="LastUpdate" ColumnName="LastUpdate" />
+                <ScalarProperty Name="ContractCancellationTerm" ColumnName="ContractCancellationTerm" />
+                <ScalarProperty Name="ContractRenewalTerm" ColumnName="ContractRenewalTerm" />
+                <ScalarProperty Name="BulkEmailDate" ColumnName="BulkEmailDate" />
+                <ScalarProperty Name="FMNotes" ColumnName="FMNotes" />
+                <ScalarProperty Name="MeetSchTime" ColumnName="MeetSchTime" />
+                <ScalarProperty Name="MeetSchDate" ColumnName="MeetSchDate" />
+                <ScalarProperty Name="MeetPerformed" ColumnName="MeetPerformed" />
+                <ScalarProperty Name="MeetScheduled" ColumnName="MeetScheduled" />
+                <ScalarProperty Name="CustomerSetup" ColumnName="CustomerSetup" />
+                <ScalarProperty Name="CreditCardOnFile" ColumnName="CreditCardOnFile" />
+                <ScalarProperty Name="FinalNoticeLastSent" ColumnName="FinalNoticeLastSent" />
+                <ScalarProperty Name="CallOfficeLastSent" ColumnName="CallOfficeLastSent" />
+                <ScalarProperty Name="LateLastSent" ColumnName="LateLastSent" />
+                <ScalarProperty Name="EmailStatus" ColumnName="EmailStatus" />
+                <ScalarProperty Name="DBEndDate" ColumnName="DBEndDate" />
+                <ScalarProperty Name="DBStartDate" ColumnName="DBStartDate" />
+                <ScalarProperty Name="QBLastInvoiceDate" ColumnName="QBLastInvoiceDate" />
+                <ScalarProperty Name="QBSubTotal" ColumnName="QBSubTotal" />
+                <ScalarProperty Name="QBInvoiceNumber" ColumnName="QBInvoiceNumber" />
+                <ScalarProperty Name="QBTotalBalance" ColumnName="QBTotalBalance" />
+                <ScalarProperty Name="QBBalance" ColumnName="QBBalance" />
+                <ScalarProperty Name="QbSyncToken" ColumnName="QbSyncToken" />
+                <ScalarProperty Name="QBId" ColumnName="QBId" />
+                <ScalarProperty Name="InvoiceMethodId" ColumnName="InvoiceMethodId" />
+                <ScalarProperty Name="PaymentMethodId" ColumnName="PaymentMethodId" />
+                <ScalarProperty Name="GPS" ColumnName="GPS" />
+                <ScalarProperty Name="HowFoundSpecify" ColumnName="HowFoundSpecify" />
+                <ScalarProperty Name="HowFoundId" ColumnName="HowFoundId" />
+                <ScalarProperty Name="StartDate" ColumnName="StartDate" />
+                <ScalarProperty Name="RouteStartDate" ColumnName="RouteStartDate" />
+                <ScalarProperty Name="WhyQuitSpecify" ColumnName="WhyQuitSpecify" />
+                <ScalarProperty Name="QuitReasonId" ColumnName="QuitReasonId" />
+                <ScalarProperty Name="FinalServiceDate" ColumnName="FinalServiceDate" />
+                <ScalarProperty Name="Combo" ColumnName="Combo" />
+                <ScalarProperty Name="Type" ColumnName="Type" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="Code" ColumnName="Code" />
+                <ScalarProperty Name="SpouseLastName" ColumnName="SpouseLastName" />
+                <ScalarProperty Name="SpouseFirstName" ColumnName="SpouseFirstName" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="LatePmt" ColumnName="LatePmt" />
+                <ScalarProperty Name="Flag" ColumnName="Flag" />
+                <ScalarProperty Name="CustomerId" ColumnName="CustomerId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
   </edmx:Runtime>

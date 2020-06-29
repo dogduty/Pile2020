@@ -1,10 +1,40 @@
 ﻿app.controller('Generic', ['$scope', '$parse', 'APIService', function ($scope, $parse, APIService) {
 
-    $scope.init = function (webApiController) {
+    $scope.init = function (webApiController, loadMethod) {
+
         $scope.webApiController = webApiController;
-        getAll(webApiController);
         if (typeof scopeAddon === "function")
             scopeAddon($scope, APIService);
+
+        if (loadMethod == "getAll")
+            getAll(webApiController);
+        if (loadMethod == "getNew")
+            getNew();
+    }
+
+    function getNew() {
+        var servCall = APIService.genGetNew($scope.webApiController);
+        servCall.then(function (d) {
+            var model = $parse($scope.webApiController);
+            model.assign($scope, d.data);
+        }, function (error) {
+            $scope.errors = error.data;
+        });
+    }
+
+    $scope.new = function () {
+        getNew();
+    }
+
+    $scope.save = function (id) {
+        $scope.errors = null;
+        var obj = $parse($scope.webApiController);
+        var servCall = APIService.genSave($scope.webApiController, obj($scope));
+        servCall.then(function (d) {
+            window.location.href = d.headers("location");
+        }, function (error) {
+            $scope.errors = error.data;
+        });
     }
 
     function getAll(webApiController) {

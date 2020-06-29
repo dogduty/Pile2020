@@ -1,0 +1,18 @@
+﻿@model Pile.db.Customer
+
+@{
+    ViewBag.Title = "Edit";
+    Layout = "~/Views/Shared/_LayoutAngular.cshtml";
+}
+
+@using (Html.BeginForm("Create", "Customers", "POST"))
+{
+
+
+
+
+    @Html.Partial("_customerCreate", Model)
+
+
+
+}

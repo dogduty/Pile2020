@@ -1,5 +1,4 @@
-﻿@using DogDutyClassLibrary
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -9,26 +8,18 @@
     @Scripts.Render("~/bundles/modernizr")
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
-    @*@Scripts.Render("~/bundles/angularjs")*@
-    @*@Scripts.Render("~/bundles/genericController")*@
+    @*@Scripts.Render("~/bundles/angularjs")
+    @Scripts.Render("~/bundles/genericController")*@
 
 <script src="~/Scripts/angular.js"></script>
 <script src="~/Scripts/angular-route.js"></script>
 <script src="~/Scripts/ui-bootstrap-tpls-2.5.0.min.js"></script>
 
-<script src="~/Scripts/APIScripts/Module.js?v1.02"></script>
-<script src="~/Scripts/APIScripts/Service.js"></script>
-<script src="~/Scripts/APIScripts/Generic.js"></script>
+<script src="~/Scripts/APIScripts/Module.js?v1.18"></script>
+<script src="~/Scripts/APIScripts/Service.js?v1.18"></script>
+<script src="~/Scripts/APIScripts/Generic.js?v1.18"></script>
 
-    <meta content="@(Response.Cookies["DisplayMode"].Value)" />
-    @if (DDAppSession.Current.CssMode == DDAppSession.ViewMode.Dark)
-    {
-        <link id="MyCss" href="/Content/DarkStyle.css?v1.0" rel="stylesheet" />
-    }
-    else
-    {
-        <link id="MyCss" href="/Content/LightStyle.css?v1.0" rel="stylesheet" />
-    }
+
 </head>
 <body>
 
@@ -70,15 +61,6 @@
             <p>&copy; @DateTime.Now.Year - Scoop Wizards</p>
         </footer>
 
-
-
-        @*@Html.ActionLink(DDAppSession.Current.CssMode == DDAppSession.ViewMode.Dark ? "Lights On" : "Lights Out", "SwitchViewMode", "Controls", null, new { @class = "btn btn-sm btn-primary btn-inverse" })*@
-
-
-
-        @*<a class="btn btn-sm btn-primary btn-inverse" id="lightButton" href="" onclick="darkMode(@(DDAppSession.Current.CssMode == DDAppSession.ViewMode.Dark ? "'dark'" : "'light'")); return false;">
-            @(DDAppSession.Current.CssMode == DDAppSession.ViewMode.Dark ? "Lights On" : "Lights Out" )
-        </a>*@
     </div>
 
 

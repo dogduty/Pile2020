@@ -9,6 +9,11 @@ namespace Pile
 {
     public static class Config
     {
+
+        public static string MapApiBaseUri { get { return ConfigurationManager.AppSettings["GoogleMapsBaseUri"]; } }
+        public static string MapApiKey { get { return ConfigurationManager.AppSettings["GoogleMapsApiKey"]; } }
+        public static string QbRealm { get { return ConfigurationManager.AppSettings["QbRealm"]; } }
+
         public static string getSetting(string name, string defaultValue = null)
         {
             return ConfigurationManager.AppSettings[name] ?? defaultValue;

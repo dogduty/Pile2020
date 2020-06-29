@@ -1,7 +1,10 @@
 ﻿app.service("APIService", function ($http) {
 
-    this.genGetAll = function (controller) {
-        return $http.get("/api/" + controller);
+    this.genGetAll = function (controller, qs) {
+        if (qs === undefined)
+            return $http.get("/api/" + controller);
+           
+        return $http.get("/api/" + controller + "/?" + qs);
     }
 
     this.genGetOne = function (controller, id) {
@@ -10,6 +13,10 @@
 
     this.genDelete = function (controller, id) {
         return $http.delete("/api/" + controller + "/" + id);
+    }
+
+    this.genGetNew = function (controller) {
+        return $http.get("/api/" + controller + "/new")
     }
 
     this.genSave = function (controller, obj) {
