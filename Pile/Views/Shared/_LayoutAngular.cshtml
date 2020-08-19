@@ -15,16 +15,16 @@
 <script src="~/Scripts/angular-route.js"></script>
 <script src="~/Scripts/ui-bootstrap-tpls-2.5.0.min.js"></script>
 
-<script src="~/Scripts/APIScripts/Module.js?v1.18"></script>
-<script src="~/Scripts/APIScripts/Service.js?v1.18"></script>
-<script src="~/Scripts/APIScripts/Generic.js?v1.18"></script>
+<script src="~/Scripts/APIScripts/Module.js?v1.81"></script>
+<script src="~/Scripts/APIScripts/Service.js?v1.81"></script>
+<script src="~/Scripts/APIScripts/Generic.js?v1.81"></script>
 
 
 </head>
 <body>
 
 
-    <nav class="container navbar @(Response.Cookies["DisplayMode"].Value == "DarkStyle" ? "navbar-inverse" : "navbar-default") ">
+    <nav class="container navbar navbar-default">
         <div class="container-fluid">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
@@ -49,6 +49,7 @@
                     <li><a href="~/SystemUpdates.aspx">Update Forms</a></li>
                     <li>@Html.ActionLink("Progress", "Index", "Progress")</li>
                 </ul>
+                @Html.Partial("_LoginPartial")
             </div>
         </div>
     </nav>
@@ -69,7 +70,7 @@
         function darkMode(current) {
             if (current == "dark") {
                 $("#MyCss").attr("href", "/Content/LightStyle.css");
-                $("#lightButton").attr("onclick", "darkMode('light'); return false;"); 
+                $("#lightButton").attr("onclick", "darkMode('light'); return false;");
                 $("#lightButton").html("Lights Out");
             }
             else {

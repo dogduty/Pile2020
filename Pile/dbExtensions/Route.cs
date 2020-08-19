@@ -8,12 +8,25 @@ namespace Pile.db
 {
     public partial class Route
     {
+
+        public static void UpdateEstNums(int ServiceDayId)
+        {
+            using (var db = new pileEntities())
+            {
+                var serviceDay = db.ServiceDays.SingleOrDefault(x => x.Id == ServiceDayId);
+                //var serviceDaysToUpdate = db.ServiceDays.Where(x => x.Day == serviceDay.d)
+            }
+        }
+
+        #region CodeToReview-NotReferencedInNew
+
+
         public async static Task DeletePauseAndFinalRoutes(Customer cust)
         {
             if (cust.FinalServiceDate.HasValue)
             {
                 await DeleteRoutes(cust, cust.FinalServiceDate.Value);
-                return; 
+                return;
             }
 
             var futurePauses = cust.Pauses.Where(x => x.PauseDate > DateTime.Now || x.RestartDate > DateTime.Now);
@@ -72,7 +85,7 @@ namespace Pile.db
                     //Make sure at least one other customer has routes defined in timeframe (original logic).
                     if (!db.Routes.Any(x => x.Date >= weekStart && x.Date <= thisWeekend))
                         return;
-                    
+
                     var svcDetails = db.ServiceDetails.Where(x => x.CustomerId == cust.CustomerId).ToList();
                     if (svcDetails == null || svcDetails.Count(x => x.CountDown > 0) == 0)
                         return;
@@ -83,7 +96,7 @@ namespace Pile.db
                         var service = db.Services.Single(x => x.ServiceId == serviceDetail.ServiceId);
                         if (RouteQualifies(weekStart, service, serviceDetail, cust))
                         {
-                            var employee = db.Employees.Single(x => x.Crew == serviceDetail.Crew && x.Status != "I");
+                            var employee = serviceDetail.ServiceDay.Crew.Employee; //db.Employees.Single(x => x.Crew == serviceDetail.ServiceDay.Crew && x.Status != "I");
                             var total = serviceDetail.GetStopAmout();
 
                             //these discounts are already figured into the total above.  The discount is stored on the route
@@ -93,14 +106,14 @@ namespace Pile.db
 
                             routesToAdd.Add(new Route
                             {
-                                Date = weekStart.AddDays(serviceDetail.Day),
+                                Date = weekStart.AddDays(serviceDetail.ServiceDay.Day),
                                 CustomerID = cust.CustomerId,
                                 Discount = discounts,
                                 EmpAmount = employeeAmount.Amount,
                                 EmployeeId = employee.EmployeeID,
                                 EmpPerc = (float)employeeAmount.Percent,
-                                EstNum = serviceDetail.EstNum,
-                                ServiceDetailId = serviceDetail.ServiceDetailId, 
+                                EstNum = serviceDetail.ServiceDay.EstNum,
+                                ServiceDetailId = serviceDetail.ServiceDetailId,
                                 ServiceId = service.ServiceId,
                                 Status = "A",
                                 WeeklyRate = total
@@ -119,7 +132,7 @@ namespace Pile.db
 
         public static bool RouteQualifies(DateTime weekStart, Service service, ServiceDetail serviceDetail, Customer cust)
         {
-            DateTime? nextRouteDate = weekStart.AddDays(serviceDetail.Day);
+            DateTime? nextRouteDate = weekStart.AddDays(serviceDetail.ServiceDay.Day);
             DateTime? lastRouteDate = serviceDetail.LastRouteDate;
             if (!lastRouteDate.HasValue)
                 return false;
@@ -156,10 +169,10 @@ namespace Pile.db
             // Monthly = 3
             // One Time = 4
             if (service.Freq == 4 ||
-                (service.Freq == 1 && lastRouteDays < 7)  ||
+                (service.Freq == 1 && lastRouteDays < 7) ||
                 (service.Freq == 2 && lastRouteDays < 14) ||
                 (service.Freq == 3 && lastRouteDays < 28))
-                    return false;
+                return false;
 
             return true;
         }
@@ -188,7 +201,9 @@ namespace Pile.db
         public static DateTime StartOfWeekForDate(DateTime date)
         {
             return date.AddDays(-((int)date.DayOfWeek));
-        }
+        } 
+
+        #endregion
 
     }
 }

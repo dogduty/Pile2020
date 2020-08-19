@@ -1,0 +1,383 @@
+﻿
+<h3 ng-if="errors" class="alert-danger"> {{errors.Message}}</h3>
+<h3 ng-if="messages" class="alert-success"> {{messages}}</h3>
+
+{{cust = Customers.Customer;""}}
+
+<div class="col-xs-3">
+    <h2 class="no-top-margin" ng-show="cust.CustomerId == 0">New Customer</h2>
+    <div ng-hide="cust.CustomerId == 0">
+        <h2 class="no-top-margin">{{cust.FirstName}} {{cust.LastName}}</h2>
+        <h4 class="no-top-margin">Customer ID - {{cust.CustomerId}}</h4>
+    </div>
+</div>
+<div class="col-xs-2">
+    <div>
+        <h3 class="no-top-margin" ng-class="cust.Status=='A' ? 'text-success' : 'text-danger'">{{cust.Status == 'A' ? 'Active' : 'Inactive'}}</h3>
+    </div>
+    <div>
+        <select id="CustType" ng-model="cust.Type" ng-options="custType.Type as custType.Name for custType in custTypes"></select>
+    </div>
+</div>
+
+<div class="col-xs-1">
+    <div class="bold">QbId</div>
+    <div>{{cust.QBId}}</div>
+</div>
+<div class="col-xs-4">
+    <div class="col-xs-6">
+        <div><input type="checkbox" ng-model="cust.CreditCardOnFile" /> CC on File</div>
+        <div><input type="checkbox" ng-model="cust.CustomerSetup" /> Cust Setup</div>
+    </div>
+    <div class="col-xs-6">
+        <div><input type="checkbox" ng-model="cust.MeetScheduled" /> Meet Sched</div>
+        <div><input type="checkbox" ng-model="cust.MeetPerformed" /> Cust Met</div>
+    </div>
+</div>
+
+
+
+
+<hr class="clearfix form-line" />
+
+<div class="col-xs-3">
+    <input type="button" class="btn btn-sm btn-success" value="Save" ng-click="save(cust)" />
+</div>
+
+<div class="col-xs-3">
+    <a class="btn btn-sm btn-primary btn-inverse" href="/routes/?CustID={{cust.CustomerId}}" target="maps">
+        Route Map
+    </a>
+</div>
+
+<div class="col-xs-3">
+    <select id="actions" onchange="takeAction(this)">
+        <option value="">Take Action</option>
+        <option ng-repeat="action in actions" value="{{action.Id}}">{{action.Name}}</option>
+    </select>
+</div>
+
+
+
+<hr class="clearfix form-line" />
+<h2 ng-hide="cust">Loading Data....</h2>
+<!--Name row-->
+
+<div class="form-group col-xs-3">
+    <label for="FirstName" class="control-label label-push-content">First Name</label>
+    <div class="detail-result">
+        <input id="FirstName" type="text" class="text-box single-line" ng-model="cust.FirstName" />
+    </div>
+</div>
+<div class="form-group col-xs-3">
+    <label for="LastName" class="control-label label-push-content">Last Name</label>
+    <div class="detail-result">
+        <input id="LastName" type="text" class="text-box single-line" ng-model="cust.LastName" /> <!--ng-blur="getList()" />-->
+    </div>
+</div>
+<div class="form-group col-xs-3">
+    <label for="SpouseFirstName" class="control-label label-push-content">Spouse First</label>
+    <div class="detail-result">
+        <input id="SpouseFirstName" type="text" class="text-box single-line" ng-model="cust.SpouseFirstName" />
+    </div>
+</div>
+<div class="form-group col-xs-3">
+    <label for="SpouseLastName" class="control-label label-push-content">Spouse Last</label>
+    <div class="detail-result">
+        <input id="SpouseLastName" type="text" class="text-box single-line" ng-model="cust.SpouseLastName" />
+    </div>
+</div>
+
+
+<!--Site Address row-->
+
+<div ng-repeat="siteAddress in cust.Addresses | filter:{ AddressType : 'Site' }">
+
+    <div class="form-group col-xs-3">
+        <label for="Address1" class="control-label label-push-content">Address</label>
+        <div class="detail-result">
+            <input id="Address1" type="text" class="text-box single-line" ng-model="siteAddress.Address1" />
+        </div>
+    </div>
+    <div class="form-group col-xs-3">
+        <label for="City" class="control-label label-push-content">City</label>
+        <div class="detail-result">
+            <input id="City" type="text" class="text-box single-line" ng-model="siteAddress.City" /> <!--ng-blur="getList()" />-->
+        </div>
+    </div>
+    <div class="form-group col-xs-3">
+        <label for="State" class="control-label label-push-content">State</label>
+        <div class="detail-result">
+            <input id="State" type="text" class="text-box single-line" ng-model="siteAddress.State" />
+        </div>
+    </div>
+    <div class="form-group col-xs-3">
+        <label for="Zip" class="control-label label-push-content">Zip</label>
+        <div class="detail-result">
+            <input id="Zip" type="text" class="text-box single-line" ng-model="siteAddress.Zip" />
+        </div>
+    </div>
+</div>
+
+{{mailing = (cust.Addresses | filter:{ AddressType : 'Mailing' });""}}
+
+<!--Mailing Address row-->
+
+<div ng-repeat="mailingAddress in cust.Addresses | filter:{ AddressType : 'Mailing' }">
+
+    <div class="form-group col-xs-3">
+        <label for="mailAddress1" class="control-label label-push-content">Mail Address</label>
+        <div class="detail-result">
+            <input id="mailAddress1" type="text" class="text-box single-line" ng-model="mailingAddress.Address1" />
+        </div>
+    </div>
+    <div class="form-group col-xs-3">
+        <label for="mailCity" class="control-label label-push-content">Mail City</label>
+        <div class="detail-result">
+            <input id="mailCity" type="text" class="text-box single-line" ng-model="mailingAddress.City" /> <!--ng-blur="getList()" />-->
+        </div>
+    </div>
+    <div class="form-group col-xs-3">
+        <label for="mailState" class="control-label label-push-content">Mail State</label>
+        <div class="detail-result">
+            <input id="mailState" type="text" class="text-box single-line" ng-model="mailingAddress.State" />
+        </div>
+    </div>
+    <div class="form-group col-xs-3">
+        <label for="mailZip" class="control-label label-push-content">Mail Zip</label>
+        <div class="detail-result">
+            <input id="mailZip" type="text" class="text-box single-line" ng-model="mailingAddress.Zip" />
+        </div>
+    </div>
+</div>
+
+
+<!--Emails row-->
+<span class="clearfix"></span>
+
+<div ng-repeat="emailAddress in cust.EmailAddresses">
+
+    <div class="form-group col-xs-3">
+        <div class="input-tight">
+            <label for="Email{{$index}}" class="control-label label-push-content">
+                <span ng-show="emailAddress.IsPrimary">Primary </span>
+                <span ng-hide="emailAddress.IsPrimary">Addn'l &nbsp;</span>
+                Email
+            </label>
+            <span class="pull-right pointer" ng-if="emailAddress.Id != 0 && !emailAddress.IsPrimary" ng-click="deleteChildObj('EmailAddresses', cust.EmailAddresses, emailAddress)">x</span>
+            @*<input type="button" class="btn btn-xs alert-danger pull-right center-block" value="X" ng-if="!emailAddress.IsPrimary" ng-click="deleteChildObj('EamilAddresses', cust.EmailAddresses, emailAddress)" />*@
+            <div class="detail-result">
+                <input id="Email{{$index}}" type="text" class="text-box single-line" ng-model="emailAddress.Email" />
+            </div>
+            <input id="svcEmail{{index}}" type="checkbox" ng-model="emailAddress.ServiceEmails" />
+            <label for="svcEmail{{index}}">Service Emails</label>
+        </div>
+    </div>
+</div>
+
+<div class="form-group col-xs-3" ng-show="cust.EmailAddresses.length < 4">
+    <label for="emailAdd" class="control-label label-push-content">&nbsp;</label>
+    <div class="detail-result">
+        <input type="button" value="Add Additional Email" ng-click="addEmail()" />
+    </div>
+</div>
+
+<!--Phones row-->
+<span class="clearfix"></span>
+
+<div ng-repeat="phone in cust.Phones">
+    <div class="form-group col-xs-3">
+        <div class="input-tight">
+            <label for="{{phone.PhoneType}}Phone" class="control-label label-push-content">{{phone.PhoneType}}</label>
+            <span class="pull-right pointer" ng-if="phone.Id != 0" ng-click="deleteChildObj('Phones', cust.Phones, phone)">x</span>
+            <div class="detail-result">
+                <input id="{{phone.PhoneType}}Phone" type="text" class="text-box single-line" ng-model="phone.Number" />
+            </div>
+            <input type="text" placeholder="Phone Note" ng-model="phone.Note" />
+        </div>
+    </div>
+</div>
+
+{{refilterPhone();""}}
+
+<div class="form-group col-xs-3" ng-show="cust.Phones.length < 4">
+    <label for="phoneSelect" class="control-label label-push-content">&nbsp;</label>
+    <div class="detail-result">
+        <select id="phoneSelect" ng-model="addPhoneType" ng-options="o as o for o in phoneTypes" ng-change="addPhone(addPhoneType)">
+            <option value="">Add Phone</option>
+        </select>
+    </div>
+</div>
+
+
+<!--Gate Code and Notes-->
+<span class="clearfix"></span>
+
+<div class="form-group col-xs-3">
+    <label for="GateCode" class="control-label label-push-content">Gate Code</label>
+    <div class="detail-result">
+        <input id="GateCode" type="text" class="text-box single-line" ng-model="cust.Combo" />
+    </div>
+</div>
+
+<div ng-repeat="note in cust.Notes">
+    <div class="form-group col-xs-3">
+        <div class="note">
+            <label for="Note{{index}}" class="control-label label-push-content">
+                Note - {{note.NoteTime | date:'MM/dd/yyyy'}}
+            </label>
+            <span class="pull-right pointer" ng-if="note.Id != 0" ng-click="deleteChildObj('Notes', cust.Notes, note)">x</span>
+            @*<input type="button" class="btn btn-xs alert-danger pull-right center-block" value="X" ng-if="note.Id != 0" ng-click="deleteChildObj('Notes', cust.Notes, note)" />*@
+            <div class="detail-result">
+                <textarea id="Note{{index}}" type="text" class="notes" ng-model="note.Content"></textarea>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="form-group col-xs-3" ng-show="cust.Notes.length < 3">
+    <label for="noteAdd" class="control-label label-push-content">&nbsp;</label>
+    <div class="detail-result">
+        <input type="button" value="Add Note" ng-click="addNote()" />
+    </div>
+</div>
+
+
+<!--How found / Payment / invoice method-->
+<span class="clearfix"></span>
+
+<div class="form-group col-xs-3">
+    <label for="HowFound" class="control-label label-push-content">How Found</label>
+    <div class="detail-result">
+        <select id="HowFound" ng-model="cust.HowFoundId" ng-options="how.Id as how.Name for how in HowFounds">
+            <option value=""></option>
+            @*<option ng-repeat="how in HowFounds" value="{{how.Id}}">{{how.Name}}</option>*@
+        </select>
+        <input type="text" ng-model="cust.HowFoundSpecify" placeholder="How found details" />
+    </div>
+</div>
+
+<div class="form-group col-xs-3">
+    <label for="PaymentMethod" class="control-label label-push-content">Payment Method</label>
+    <div class="detail-result">
+        <select id="PaymentMethod" ng-model="cust.PaymentMethodId" ng-options="pay.Id as pay.Name for pay in PaymentMethods">
+            <option value=""></option>
+            @*<option ng-repeat="pay in PaymentMethods" value="{{pay.Id}}" ng-selected="{{cust.PaymentMehodId}}">{{pay.Name}}</option>*@
+        </select>
+    </div>
+</div>
+
+<div class="form-group col-xs-3">
+    <label for="InvoiceMethod" class="control-label label-push-content">Invoice Method</label>
+    <div class="detail-result">
+        <select id="InvoiceMethod" ng-model="cust.InvoiceMethodId" ng-options="invoice.Id as invoice.Name for invoice in InvoiceMethods">
+            <option value=""></option>
+            @*<option ng-repeat="invoice in InvoiceMethods" value="{{invoice.Id}}">{{invoice.Name}}</option>*@
+        </select>
+    </div>
+</div>
+
+
+<div class="form-group col-xs-3">
+    <label for="dates" class="control-label label-push-content">Dates</label>
+    <div id="dates">
+        <div class="detail-result">
+            <input type="date" ng-model="cust.MeetSchDate" value="{{cust.MeetSchDate | date: 'yyyy-MM-dd'}}" /> - Meet
+        </div>
+        <div class="detail-result">
+            <input style="width: 152px;" type="text" ng-model="cust.MeetSchTime" /> - Meet Time
+        </div>
+        <div class="detail-result">
+            <input type="date" ng-model="cust.RouteStartDate" value="{{(cust.RouteStartDate | date: 'yyyy-MM-dd')}}" /> - Route Start
+        </div>
+        <div class="detail-result" ng-show="cust.FinalServiceDate">
+            <input type="date" ng-model="cust.FinalServiceDate" value="{{(cust.FinalServiceDate | date: 'yyyy-MM-dd')}}" /> - FinalServiceDate
+        </div>
+    </div>
+</div>
+
+<!--Code | Flag | Late Pmt Amt | Resend email-->
+<span class="clearfix"></span>
+
+<div class="form-group col-xs-3">
+    <label for="Code" class="control-label label-push-content">Code</label>
+    <div class="detail-result">
+        <input id="Code" type="text" class="text-box single-line" ng-model="cust.Code" />
+    </div>
+</div>
+
+<div class="form-group col-xs-3">
+    <label for="Flag" class="control-label label-push-content">Flag</label>
+    <div class="detail-result">
+        <select id="Flag" ng-model="cust.Flag" ng-options="flag.Id as flag.Name for flag in flags"></select>
+        <input type="button" class="btn btn-xs alert-warning" value="Resend Email" />
+    </div>
+
+</div>
+
+<div class="form-group col-xs-3">
+    <label for="LatePmt" class="control-label label-push-content">Late Payment</label>
+    <div class="detail-result">
+        <input id="LatePmt" ng-model="cust.LatePmt" />
+    </div>
+</div>
+
+<div class="form-group col-xs-3">
+    <label for="Notices" class="control-label label-push-content">Notices Last Sent</label>
+    <div class="detail-result" id="Notices">
+        <div ng-show="cust.FinalNoticeLastSent" id="finalNotice">{{cust.FinalNoticeLastSent | date: 'MM/dd/yyyy'}} - Final</div>
+        <div ng-show="cust.LateLastSent" id="lateNotice">{{cust.LateLastSent | date: 'MM/dd/yyyy'}} - Late</div>
+        <div ng-show="cust.CallOfficeLastSent" id="callOfficeNotice">{{cust.CallOfficeLastSent | date: 'MM/dd/yyyy'}} - Call</div>
+        <div ng-hide="cust.CallOfficeLastSent || cust.LateLastSent || cust.FinalNoticeLastSent">No notices.</div>
+    </div>
+</div>
+
+
+<span class="clearfix"></span>
+<!--Renewal & Cancel Terms-->
+
+<div class="form-group col-xs-3">
+    <label for="Renewal" class="control-label label-push-content">Renewal Term</label>
+    <div class="detail-result">
+        <input id="Renewal" type="text" ng-model="cust.ContractRenewalTerm" />
+    </div>
+</div>
+
+<div class="form-group col-xs-3">
+    <label for="CxlTerm" class="control-label label-push-content">Cancelation Term</label>
+    <div class="detail-result">
+        <input id="CxlTerm" type="text" ng-model="cust.ContractCancellationTerm" />
+    </div>
+</div>
+
+
+
+<!--Buttons and whatnot at bottom-->
+
+<div ng-show="errors">
+    <hr class="clearfix form-line" />
+    <h3 class="alert-danger"> {{errors.Message}}</h3>
+</div>
+
+<hr class="clearfix form-line" />
+
+<h3 ng-if="messages" class="alert-success"> {{messages}}</h3>
+
+<div class="col-xs-2">
+    <input type="button" class="btn btn-sm btn-success" value="Save" ng-click="save(cust)" />
+</div>
+
+<hr class="clearfix form-line" />
+
+<div id="actions">
+    <div class="col-xs-2" ng-hide="mailing.length > 0">
+        <input type="button" value="Add Mailing Address" ng-click="addAddress()" />
+    </div>
+    <div class="col-xs-2" ng-hide="cust.EmailAddresses.length < 4">
+        <input type="button" value="Add Additional Email" ng-click="addEmail()" />
+    </div>
+    <div class="col-xs-2" ng-hide="cust.Notes.length < 3">
+        <input type="button" value="Add Note" ng-click="addNote()" />
+    </div>
+</div>
+

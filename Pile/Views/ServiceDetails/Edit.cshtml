@@ -1,0 +1,152 @@
+﻿
+@{
+    ViewBag.Title = "Edit";
+    Layout = "~/Views/Shared/_LayoutAngular.cshtml";
+}
+
+<div data-ng-app="APIModule">
+    <div ng-controller="Generic" ng-init="init('ServiceDetails', 'getDetailQueryId')">
+        <div class="col-xs-12">
+            <div class="col-xs-2"></div>
+            <div class="col-xs-8">
+                <h2 ng-show="ServiceDetails">Service Days for {{ServiceDetails.Customer.FirstName}} {{ServiceDetails.Customer.LastName}}</h2>
+                <h2 ng-hide="ServiceDetails">Loading data . . . </h2>
+                <h3 ng-if="errors" class="alert-danger"><span style="cursor: pointer" ng-click="clearError()"><sub>x</sub></span> {{errors}}</h3>
+                <h3 ng-if="messages" class="alert-success"><span style="cursor: pointer" ng-click="clearError()"><sub>x</sub></span> {{messages}}</h3>
+                <table class="table">
+                    <!--scrollTable -->
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Day</th>
+                            <th>Crew</th>
+                            <th>Dogs</th>
+                            <th>Est. Num</th>
+                            <th>Non-Tax</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="serviceDay in ServiceDetails.ServiceDays" ng-class="serviceDay.Id ==  0 ? 'newRow' : editObj.Id == serviceDay.Id ? 'editingRow' : ''">
+                            <td>
+                                <input type="button" class="alert-info" value="Clone" ng-click="cloneServiceDay(serviceDay)" />
+                            </td>
+                            <td ng-click="edit(serviceDay)">
+                                <span ng-hide="serviceDay.Id == editObj.Id">{{getWeekday(serviceDay.Day)}}</span>
+                                <span ng-show="serviceDay.Id == editObj.Id"><select ng-model="editObj.Day" ng-change="updateServiceDay()" ng-options="day.Id as day.Day for day in daysOfTheWeek"></select></span>
+                            </td>
+                            <td ng-click="edit(serviceDay)">
+                                <span ng-hide="serviceDay.Id == editObj.Id">{{serviceDay.Crew}} - {{(ServiceDetails.Crews | filter: { Crew: serviceDay.Crew})[0].FirstName }}</span>
+                                <span ng-show="serviceDay.Id == editObj.Id"><select ng-model="editObj.Crew" ng-change="updateServiceDay()" ng-options="crew.Crew as (crew.Crew + ' - ' + crew.FirstName) for crew in ServiceDetails.Crews"></select></span>
+                            </td>
+                            <td ng-click="edit(serviceDay)">
+                                <span ng-hide="serviceDay.Id == editObj.Id">{{serviceDay.NumDogs}}</span>
+                                <span ng-show="serviceDay.Id == editObj.Id"><input style="width: 90px;" type="number" ng-model="editObj.NumDogs" ng-change="updateServiceDay()" /></span>
+                            </td>
+                            <td ng-click="edit(serviceDay)">
+                                <span ng-hide="serviceDay.Id == editObj.Id">{{serviceDay.EstNum}}</span>
+                                <span ng-show="serviceDay.Id == editObj.Id"><input style="width: 90px;" type="text" ng-model="editObj.EstNum" ng-change="updateServiceDay()" /></span>
+                            </td>
+                            <td ng-click="edit(serviceDay)">
+                                <span ng-hide="serviceDay.Id == editObj.Id">{{(serviceDay.NonTaxable ? "Yes" : "")}}</span>
+                                <span ng-show="serviceDay.Id == editObj.Id"><input style="width: 90px;" type="checkbox" ng-model="editObj.NonTaxable" ng-change="updateServiceDay()" /></span>
+                            </td>
+                            <td>
+                                <input type="button" class="alert-danger" value="Delete" ng-click="deleteServiceDay(serviceDay)" />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-xs-2"></div>
+        </div>
+        <div class="col-xs-2"></div>
+        <div class="col-xs-8">
+            <div class="col-xs-1">
+                <input type="button" class="alert-warning" value="New" ng-click="edit({Id: 0}, true)" />
+            </div>
+            <div class="col-xs-1">
+                <input type="button" class="alert-success" value="Save" ng-click="editSave()" />
+            </div>
+            <div class="col-xs-2" ng-show="editObj">
+                <input type="button" value="Deselect" ng-click="edit(null)" />
+            </div>
+            <div class="col-xs-6" ng-hide="editObj">
+                <h4> Click row above to edit</h4>
+            </div>
+        </div>
+        <div class="col-xs-2"></div>
+        <hr class="clearfix form-line" />
+        <div>
+            <h3 ng-show="editObj">
+                {{ServiceDetails.Customer.FirstName}} {{ServiceDetails.Customer.LastName}} - Day: {{getWeekday(editObj.Day)}} -
+                Crew: {{editObj.Crew}} {{(ServiceDetails.Crews | filter: { Crew: editObj.Crew})[0].FirstName }}
+            </h3>
+        </div>
+        <div class="col-xs-12">
+            <table class="table" ng-show="editObj" title="Services:">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Qty</th>
+                        <th>Description</th>
+                        <th>Price</th>
+                        <th>Qty Price</th>
+                        <th>Addn'l Amt</th>
+                        <th>Discount</th>
+                        <th>Pay Adj</th>
+                        <th>Count</th>
+                    </tr>
+                </thead>
+                <tbody class="number-6-places">
+                    <tr ng-repeat="serviceDetail in editObj.ServiceDetails">
+                        <td></td>
+                        <td><input class="number-3" type="number" ng-model="serviceDetail.Qty" /></td>
+                        <td>{{(ServiceDetails.Services | filter: { ServiceId: serviceDetail.ServiceId })[0].Description }}</td>
+                        <td><input class="number-6" type="number" ng-model="serviceDetail.Price" step="0.01" /></td>
+                        <td><input class="number-6" type="number" ng-model="serviceDetail.QtyPrice" step="0.01" /></td>
+                        <td><input class="number-6" type="number" ng-model="serviceDetail.AdditAmount" step="0.01" /></td>
+                        <td><input class="number-6" type="number" ng-model="serviceDetail.Discount" step="0.01" /></td>
+                        <td><input class="number-6" type="number" ng-model="serviceDetail.EmpPayAdj" step="0.01" /></td>
+                        <td><input class="number-3" type="number" ng-model="serviceDetail.CountDown" step="1" /></td>
+                    </tr>
+                    <tr ng-hide="editObj.ServiceDetails.length > 0">
+                        <td><h2 class="alert-danger">No Services!</h2></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="col-xs-2"></div>
+        <div class="col-xs-8">
+            <h4 ng-show="editObj">Available Services (click row to add)</h4>
+            <table class="table" ng-show="editObj">
+                <tr>
+                    <th>Description</th>
+                    <th>Frequency</th>
+                    <th>Price</th>
+                    <th>Qty Price</th>
+                    <th>Flat Pay</th>
+                    <th>Qty Flat Pay</th>
+                    <th>Count</th>
+                </tr>
+                <tr ng-repeat="service in (ServiceDetails.Services | filter:filterUnusedServices )" ng-click="addServiceDetail(service)">
+                    <td>{{service.Description}}</td>
+                    <td>{{service.Freq}}</td>
+                    <td>{{service.Price | currency}}</td>
+                    <td>{{service.QtyPrice | currency}}</td>
+                    <td>{{service.FlatEmpPayAmt}}</td>
+                    <td>{{service.QtyFlatPayAmt}}</td>
+                    <td>{{service.CountDown}}</td>
+                </tr>
+
+            </table>
+        </div>
+        <div class="col-xs-2"></div>
+    </div>
+
+    <hr class="clearfix form-line" />
+
+</div>
+
+<script src="~/Scripts/APIScripts/ServiceDetails/edit.js?v1.33"></script>
+

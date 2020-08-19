@@ -64,6 +64,10 @@ tr.editingRow {
     background-color: lightgreen;
 }
 
+tr.newRow {
+    background-color: lightyellow; 
+}
+
 .btn-inverse {
     background-color: black;
     color: white
@@ -93,6 +97,45 @@ tr.editingRow {
     overflow-y: scroll;
 }
 
+div .note {
+    width: 200px;
+}
+
+.notes {
+    height: 66px;
+    width: 200px;
+    overflow-y: scroll;
+}
+
+.input-tight {
+    width: 173px;
+}
+
+.pointer {
+    cursor: pointer;
+}
 
     .scrollTable thead th {
+        padding: inherit;
     }
+
+
+.sticky-error {
+    position: fixed;
+    top: 0;
+    overflow: hidden;
+    z-index: 10;
+}
+
+
+.number-3 {
+    width: 50px;
+}
+
+.number-6 {
+    width: 100px;
+}
+
+.number-9 {
+    width: 150px;
+}

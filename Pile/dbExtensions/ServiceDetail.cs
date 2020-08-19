@@ -39,13 +39,13 @@ namespace Pile.db
         {
             using (var db = new pileEntities())
             {
-                var crewDayList = db.ServiceDetails.Where(x => x.CustomerId == customerId).Select(x => new { Crew = x.Crew, Day = x.Day }).ToList();
+                var crewDayList = db.ServiceDays.Where(x => x.CustomerId == customerId).Select(x => new { Crew = x.Crew, Day = x.Day }).ToList();
 
                 foreach (var crewDay in crewDayList.Distinct())
                 {
                     var crew = crewDay.Crew;
                     var day = crewDay.Day;
-                    var orderedCustId = (from sd in db.ServiceDetails
+                    var orderedCustId = (from sd in db.ServiceDays
                                          join c in db.Customers on sd.CustomerId equals c.CustomerId
                                          where c.Status == "A" && sd.Day == day && sd.Crew == crew
                                          select new
@@ -55,13 +55,13 @@ namespace Pile.db
                                          }).Distinct().OrderBy(x => x.EstNum).Select(x => x.CustomerId).ToList();
 
 
-                    var serviceDetailsForCrewDay = db.ServiceDetails.Where(x => orderedCustId.Contains(x.CustomerId) && x.Day == day && x.Crew == crew);
+                    var serviceDetailsForCrewDay = db.ServiceDays.Where(x => orderedCustId.Contains(x.CustomerId) && x.Day == day && x.Crew == crew);
 
                     for (int i=0; i < orderedCustId.Count(); i++)
                     {
                         var custId = orderedCustId.ElementAt(i);
-                        var serviceDetailsToUpdate = serviceDetailsForCrewDay.Where(x => x.CustomerId == custId).ToList();
-                        foreach (var detailToUpdate in serviceDetailsToUpdate)
+                        var serviceDaysToUpdate = serviceDetailsForCrewDay.Where(x => x.CustomerId == custId).ToList();
+                        foreach (var detailToUpdate in serviceDaysToUpdate)
                             detailToUpdate.EstNum = i + 1;
                     }
                 }

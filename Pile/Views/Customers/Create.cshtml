@@ -1,18 +1,31 @@
-﻿@model Pile.db.Customer
-
+﻿
 @{
-    ViewBag.Title = "Edit";
+    ViewBag.Title = "Create";
     Layout = "~/Views/Shared/_LayoutAngular.cshtml";
 }
 
-@using (Html.BeginForm("Create", "Customers", "POST"))
-{
+<div data-ng-app="APIModule">
+    <div ng-controller="Generic" ng-init="init('Customers', 'new')">
 
 
+        @Html.Partial("_customerEdit")
 
 
-    @Html.Partial("_customerCreate", Model)
+    </div> <!--Controller Div -->
 
 
+    <span class="clearfix"></span>
 
-}
+</div>
+
+<script src="~/Scripts/APIScripts/Customers/Edit.js?v1.85"></script>
+
+
+<script type="text/javascript">
+    function takeAction(ddl) {
+        if (ddl.value == "")
+            return;
+        window.open(ddl.value, "custdetail");
+        ddl.selectedIndex = 0;
+    }
+</script>

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Data.Entity;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Net;
@@ -14,7 +15,31 @@ namespace Pile.db
     [MetadataType(typeof(MetaCustomer))]
     public partial class Customer
     {
-        public string Validate(List<PropertyInfo> changedProps)
+        public void SaveChildObjects(pileEntities db)
+        {
+            foreach (var address in Addresses.Where(x => x.Id != 0))
+                db.Entry(address).State = EntityState.Modified;
+            foreach (var email in EmailAddresses.Where(x => x.Id != 0))
+                db.Entry(email).State = EntityState.Modified;
+            foreach (var note in Notes.Where(x => x.Id != 0))
+                db.Entry(note).State = EntityState.Modified;
+            foreach (var phone in Phones.Where(x => x.Id != 0))
+                db.Entry(phone).State = EntityState.Modified;
+
+
+            foreach (var address in Addresses.Where(x => x.Id == 0))
+                db.Addresses.Add(address);
+            foreach (var email in EmailAddresses.Where(x => x.Id == 0))
+                db.EmailAddresses.Add(email);
+            foreach (var note in Notes.Where(x => x.Id == 0))
+                db.Notes.Add(note);
+            foreach (var phone in Phones.Where(x => x.Id == 0))
+                db.Phones.Add(phone);
+
+            db.SaveChanges();
+        }
+
+        public string Validate()//List<PropertyInfo> changedProps)
         {
             //other validations are accomplished via the Model.IsValid calls typically in controllers.
             //check out the model in ddCustomerMeta that takes care of the ddCustomer class
@@ -32,15 +57,57 @@ namespace Pile.db
             if (this.MeetScheduled && (this.MeetSchDate == null || string.IsNullOrWhiteSpace(this.MeetSchTime)))
                 return "Meet Scheduled Checked, Meet Date and Time not set.";
 
-            if (this.Status == "I" && !this.FinalServiceDate.HasValue)
-                return "Customer inactive without Final Service Date Set.";
+            var siteAddress = this.Addresses.SingleOrDefault(x => x.AddressType == "Site");
 
-            if (this.FinalServiceDate.HasValue && this.QuitReason == null )
-                return "Why Quit not selected";
+            if (siteAddress == null)
+                return "Site Address must be supplied";
 
-            if (this.Status == "A" && this.RouteStartDate.Value < DateTime.Today && changedProps.Any(x => x.Name == "Status"))
-                return "Reactivated customer cannot have start date in past.";
-            
+            if (string.IsNullOrWhiteSpace(siteAddress.Address1) || string.IsNullOrWhiteSpace(siteAddress.City) || string.IsNullOrWhiteSpace(siteAddress.State) || string.IsNullOrWhiteSpace(siteAddress.Zip))
+                return "Site Address must include Address, City, State, and Zip.";
+
+            var mailing = this.Addresses.SingleOrDefault(x => x.AddressType == "Mailing");
+            if (mailing != null && (string.IsNullOrWhiteSpace(mailing.Address1) || string.IsNullOrWhiteSpace(mailing.City) || string.IsNullOrWhiteSpace(mailing.State) || string.IsNullOrWhiteSpace(mailing.Zip)))
+                return "Mailing Address must include Address, City, State, and Zip.";
+
+            if (this.Phones == null || this.Phones.Count() == 0)
+                return "At least one phone number must be supplied";
+
+            bool atLeastOnePhone = false;
+            foreach (var phone in this.Phones)
+            {
+                if (!string.IsNullOrWhiteSpace(phone.Number))
+                {
+                    atLeastOnePhone = true;
+                    break;
+                }
+            }
+            if (!atLeastOnePhone)
+                return "At least one phone number must be supplied";
+
+            var primaryEmail = this.EmailAddresses.FirstOrDefault(x => x.IsPrimary);
+            if (primaryEmail == null || string.IsNullOrWhiteSpace(primaryEmail.Email))
+                return "Must supply a primary email address.";
+
+            var eValidator = new EmailAddressAttribute();
+            foreach (var email in this.EmailAddresses)
+            {
+                if (string.IsNullOrWhiteSpace(email.Email))
+                    continue;
+                if (!eValidator.IsValid(email.Email))
+                    return $"The supplied email address, {email.Email}, is not a valid email address";
+            }
+
+
+
+            //if (this.Status == "I" && !this.FinalServiceDate.HasValue)
+            //    return "Customer inactive without Final Service Date Set.";
+
+            //if (this.FinalServiceDate.HasValue && this.QuitReason == null )
+            //    return "Why Quit not selected";
+
+            //if (this.Status == "A" && this.RouteStartDate.Value < DateTime.Today && changedProps.Any(x => x.Name == "Status"))
+            //    return "Reactivated customer cannot have start date in past.";
+
             //TODO: reactivate and fix the following validation
             //if ((this.Status == "A" && changedProps.Any(x => x.Name == "Status")) && (this.PauseDate.HasValue || this.ReStartDate.HasValue || this.FinalServiceDate.HasValue))
             //    return "Reactivated customer should not have Pause Date nor Restart Date nor Final Service Date.";
@@ -79,28 +146,28 @@ namespace Pile.db
         }
 
 
-        public async Task<AddressLookup> UpdateQbAndGps(List<PropertyInfo> changes)
-        {
-            AddressLookup addyLookup = null;
-            List<string> gpsTriggers = new List<string> { "Address", "City", "State", "Zip" };
-            List<string> QbTriggers = new List<string>(new List<string> { "FirstName", "LastName", "MailAddress", "MailCity", "MailState", "MailZip", "Home", "Mobile", "WorkPhone", "OtherPhone", "Email", "PaymentMethod", "InvoiceMethod" });
-            QbTriggers.AddRange(gpsTriggers);
+        //public async Task<AddressLookup> UpdateQbAndGps(List<PropertyInfo> changes)
+        //{
+        //    AddressLookup addyLookup = null;
+        //    List<string> gpsTriggers = new List<string> { "Address", "City", "State", "Zip" };
+        //    List<string> QbTriggers = new List<string>(new List<string> { "FirstName", "LastName", "MailAddress", "MailCity", "MailState", "MailZip", "Home", "Mobile", "WorkPhone", "OtherPhone", "Email", "PaymentMethod", "InvoiceMethod" });
+        //    QbTriggers.AddRange(gpsTriggers);
 
-            if (FinalServiceDate.HasValue)
-                Status = "I";
+        //    if (FinalServiceDate.HasValue)
+        //        Status = "I";
 
-            if (string.IsNullOrWhiteSpace(GPS) || changes.Any(x => gpsTriggers.Contains(x.Name)))
-            {
-                addyLookup = await GetGPS();
-                if (!addyLookup.HasError)
-                    GPS = addyLookup.LatLng;
-            }
+        //    if (string.IsNullOrWhiteSpace(GPS) || changes.Any(x => gpsTriggers.Contains(x.Name)))
+        //    {
+        //        addyLookup = await GetGPS();
+        //        if (!addyLookup.HasError)
+        //            GPS = addyLookup.LatLng;
+        //    }
 
-            if (changes.Any(x => QbTriggers.Contains(x.Name)))
-                LastUpdate = DateTime.Now;
+        //    if (changes.Any(x => QbTriggers.Contains(x.Name)))
+        //        LastUpdate = DateTime.Now;
 
-            return addyLookup;
-        }
+        //    return addyLookup;
+        //}
 
         public async Task RecordChangeHistoryCustomerAdd(List<PropertyInfo> changes)
         {

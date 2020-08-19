@@ -4,7 +4,11 @@
         if (qs === undefined)
             return $http.get("/api/" + controller);
            
-        return $http.get("/api/" + controller + "/?" + qs);
+        return $http.get("/api/" + controller + "?" + qs);
+    }
+
+    this.genGetDetails = function (controller, id) {
+        return $http.get("/api/" + controller + "/details/" + id)
     }
 
     this.genGetOne = function (controller, id) {
@@ -15,8 +19,11 @@
         return $http.delete("/api/" + controller + "/" + id);
     }
 
-    this.genGetNew = function (controller) {
-        return $http.get("/api/" + controller + "/new")
+    this.genGetNew = function (controller, objType) {
+        if (objType === undefined)
+            return $http.get("/api/" + controller + "/new")
+
+        return $http.get("/api/" + controller + "/new/" + objType);
     }
 
     this.genSave = function (controller, obj) {
@@ -35,6 +42,17 @@
         });
         return request;
     };
+
+    this.genSaveWithId = function (controller, id, obj) {
+        var method = "post";
+        var url = "/api/" + controller + '/' + id;
+        var request = $http({
+            method: method,
+            url: url,
+            data: obj
+        });
+        return request;
+    }
 
 
 

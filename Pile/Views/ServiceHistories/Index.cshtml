@@ -1,0 +1,32 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_LayoutAngular.cshtml";
+}
+
+<script src="~/Scripts/APIScripts/ServiceHistories/ViewServiceHistories.js?v=1.10"></script>
+
+<div data-ng-app="APIModule">
+    <div ng-controller="Generic" ng-init="init('ServiceHistories', 'serviceHistoryCustomer')">
+
+        <h2>Service History</h2>
+        <h3 ng-hide="ServiceHistories">. . . Loading . . . </h3>
+        <h3 ng-show="ServiceHistories">{{ServiceHistories.customer.FirstName}} {{ServiceHistories.customer.LastName}}</h3>
+
+        <table class="table">
+            <tr>
+                <th>ServiceDate</th>
+                <th>Employee</th>
+                <th>Description</th>
+                <th>Complaint</th>
+            </tr>
+            <tr ng-repeat="history in ServiceHistories.histories">
+                <td>{{history.detail.ServiceDate | date : "shortDate"}}</td>
+                <td>{{history.employeeFirst}} {{history.employeeLast}}</td>
+                <td><span ng-hide="history.detail.Complaint">{{history.detail.Description}}</span></td>
+                <td><span ng-show="history.detail.Complaint">{{history.detail.Description}}</span></td>
+            </tr>
+        </table>
+
+    </div>
+</div>

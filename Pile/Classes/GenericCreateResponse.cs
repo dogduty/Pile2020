@@ -7,7 +7,7 @@ namespace Pile
 {
     public class GenericCreateResponse
     {
-        public GenericCreateResponse(string message = "See Location Header for location of new object")
+        public GenericCreateResponse(string message = "See Location Header for location of new or updated object")
         {
             Message = message;
         }
