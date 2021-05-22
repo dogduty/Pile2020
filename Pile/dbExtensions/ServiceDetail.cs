@@ -17,19 +17,18 @@ namespace Pile.db
 
             using (var db = new pileEntities())
             {
-                var service = db.Services.Single(x => x.ServiceId == ServiceId);
 
                 discounts = Discount;
-                total += Invoice.GetWeeklyAmount(service.Freq, Price);
+                total += Invoice.GetWeeklyAmount(Service.Freq, Price);
 
                 if (QtyPrice > 0)
-                    total += Invoice.GetWeeklyAmount(service.Freq, QtyPrice, Qty - 1);
+                    total += Invoice.GetWeeklyAmount(Service.Freq, QtyPrice, Qty - 1);
 
                 if (Discount != 0)
-                    total -= Invoice.GetWeeklyAmount(service.Freq, Discount);
+                    total -= Invoice.GetWeeklyAmount(Service.Freq, Discount);
 
                 if (AdditAmount != 0)
-                    total += Invoice.GetWeeklyAmount(service.Freq, AdditAmount);
+                    total += Invoice.GetWeeklyAmount(Service.Freq, AdditAmount);
             }
 
             return total;
@@ -46,7 +45,7 @@ namespace Pile.db
                     var crew = crewDay.Crew;
                     var day = crewDay.Day;
                     var orderedCustId = (from sd in db.ServiceDays
-                                         join c in db.Customers on sd.CustomerId equals c.CustomerId
+                                         join c in db.Customers on sd.CustomerId equals c.Id
                                          where c.Status == "A" && sd.Day == day && sd.Crew == crew
                                          select new
                                          {

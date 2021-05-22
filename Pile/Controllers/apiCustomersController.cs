@@ -3,10 +3,12 @@ using Pile.Models;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.Validation;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http;
 
@@ -26,7 +28,7 @@ namespace Pile.Controllers
                 customers = (IOrderedQueryable<Customer>)customers.Where(x => x.Status == "A");
 
             var custGrid = customers.Select(x => new {
-                CustomerId = x.CustomerId,
+                Id = x.Id,
                 Status = x.Status,
                 FirstName = x.FirstName,
                 LastName = x.LastName,
@@ -68,9 +70,16 @@ namespace Pile.Controllers
 
         [Route("")]
         [HttpPost]
-        public async Task<HttpResponseMessage> CreateOrUpdate([FromBody] Customer customer)
+        public async Task<HttpResponseMessage> Create([FromBody] Customer customer)
         {
-            bool isNew = customer.CustomerId == 0;
+            return await Update(0, customer);
+        }
+
+        [Route("{id}")]
+        [HttpPut]
+        public async Task<HttpResponseMessage> Update(int id, [FromBody] Customer customer)
+        {
+            bool isNew = customer.Id == 0;
             string validation = null;
             var props = customer.GetType().GetProperties(BindingFlags.Public | BindingFlags.DeclaredOnly | BindingFlags.Instance).ToList();
             if (!ModelState.IsValid)
@@ -106,8 +115,17 @@ namespace Pile.Controllers
                 await db.SaveChangesAsync();
 
                 if (isNew)
-                    resp.Headers.Location = new Uri($"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/Customers/edit?id={customer.CustomerId}");
+                    resp.Headers.Location = new Uri($"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/Customers/edit?id={customer.Id}");
             }
+
+            catch (DbEntityValidationException ve)
+            {
+                var errorList = new List<string>();
+                foreach (var e in ve.EntityValidationErrors)
+                    errorList.Add($"props:{string.Join(",", e.ValidationErrors.Select(x => x.PropertyName).ToArray())} | errors:{string.Join(",", e.ValidationErrors.Select(x => x.ErrorMessage).ToArray())} ");
+                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, string.Join("<br />", errorList));
+            }
+
             catch (Exception ex)
             {
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message);
@@ -126,7 +144,7 @@ namespace Pile.Controllers
                 .Include(x => x.EmailAddresses)
                 .Include(x => x.Notes)
                 .Include(x => x.Phones)
-                .SingleOrDefaultAsync(x => x.CustomerId == id);
+                .SingleOrDefaultAsync(x => x.Id == id);
 
             var svcSummary = ServiceSummary.GetServiceSummary(db, id);           
 
@@ -147,7 +165,7 @@ namespace Pile.Controllers
 
             var matches = possibleMatches.Select(x => new
             {
-                CustomerId = x.CustomerId,
+                CustomerId = x.Id,
                 FirstName = x.FirstName,
                 LastName = x.LastName,
                 Email = x.EmailAddresses.FirstOrDefault(e => e.Email.ToLower() == email.ToLower()).Email,
@@ -172,13 +190,13 @@ namespace Pile.Controllers
         private void StampCustIdOnChildObjects(Customer cust)
         {
             foreach (var phone in cust.Phones.Where(x => x.CustomerId == 0))
-                phone.CustomerId = cust.CustomerId;
+                phone.CustomerId = cust.Id;
             foreach (var address in cust.Addresses.Where(x => x.CustomerId == 0))
-                address.CustomerId = cust.CustomerId;
+                address.CustomerId = cust.Id;
             foreach (var email in cust.EmailAddresses.Where(x => x.CustomerId == 0))
-                email.CustomerId = cust.CustomerId;
+                email.CustomerId = cust.Id;
             foreach (var note in cust.Notes.Where(x => x.CustomerId == 0))
-                note.CustomerId = cust.CustomerId;
+                note.CustomerId = cust.Id;
         }
 
 
@@ -190,28 +208,29 @@ namespace Pile.Controllers
                 if (phoneList[i].Id == 0 && string.IsNullOrWhiteSpace(phoneList[i].Number))
                     cust.Phones.Remove(phoneList[i]);
 
-            //var newEmptyPhones = cust.Phones.Where(x => x.Id == 0 && string.IsNullOrWhiteSpace(x.Number));
-            //foreach (var phone in newEmptyPhones)
-            //    cust.Phones.Remove(phone);
-
             //addresses
 
-            cust.Addresses.ToList().RemoveAll(x => x.Id == 0 && string.IsNullOrWhiteSpace(x.Address1) && string.IsNullOrWhiteSpace(x.City)
-                                    && string.IsNullOrWhiteSpace(x.State) && string.IsNullOrWhiteSpace(x.Zip));
-            //var newEmptyAddresses = cust.Addresses.Where(x => x.Id == 0 && string.IsNullOrWhiteSpace(x.Address1) && string.IsNullOrWhiteSpace(x.City) 
-            //                        && string.IsNullOrWhiteSpace(x.State) && string.IsNullOrWhiteSpace(x.Zip));
-            //foreach (var address in newEmptyAddresses)
-            //    cust.Addresses.Remove(address);
+            var addressList = cust.Addresses.ToList();
+            for (int i = addressList.Count() - 1; i >= 0; i--)
+                if (addressList[i].Id == 0 && (
+                    string.IsNullOrWhiteSpace(addressList[i].Address1) ||
+                    string.IsNullOrWhiteSpace(addressList[i].City) ||
+                    string.IsNullOrWhiteSpace(addressList[i].State) ||
+                    string.IsNullOrWhiteSpace(addressList[i].Zip)
+                ))
+                    cust.Addresses.Remove(addressList[i]);
 
-            cust.EmailAddresses.ToList().RemoveAll(x => x.Id == 0 && string.IsNullOrEmpty(x.Email));
-            //var newEmptyEmails = cust.EmailAddresses.Where(x => x.Id == 0 && string.IsNullOrEmpty(x.Email));
-            //foreach (var email in newEmptyEmails)
-            //    cust.EmailAddresses.Remove(email);
 
-            cust.Notes.ToList().RemoveAll(x => x.Id == 00 && string.IsNullOrEmpty(x.Content));
-            //var newEmptyNotes = cust.Notes.Where();
-            //foreach (var note in newEmptyNotes)
-            //    cust.Notes.Remove(note);
+            var emailList = cust.EmailAddresses.ToList();
+            for (int i = emailList.Count() - 1; i >= 0; i--)
+                if (string.IsNullOrWhiteSpace(emailList[i].Email))
+                    cust.EmailAddresses.Remove(emailList[i]);
+
+            var notesList = cust.Notes.ToList();
+            for (int i = notesList.Count() - 1; i >= 0; i--)
+                if (string.IsNullOrWhiteSpace(notesList[i].Content))
+                    cust.Notes.Remove(notesList[i]);
+
         }
 
         protected override void Dispose(bool disposing)

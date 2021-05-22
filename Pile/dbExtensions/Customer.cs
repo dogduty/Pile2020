@@ -119,7 +119,7 @@ namespace Pile.db
         {
             using (var db = new pileEntities())
             {
-                var old = db.Customers.Single(x => x.CustomerId == CustomerId);
+                var old = db.Customers.Single(x => x.Id == Id);
                 var changedProps = new List<PropertyInfo>();
                 var props = this.GetType().GetProperties(BindingFlags.Public | BindingFlags.DeclaredOnly | BindingFlags.Instance);
                 foreach (var prop in props)
@@ -144,6 +144,7 @@ namespace Pile.db
                 return changedProps;
             }
         }
+
 
 
         //public async Task<AddressLookup> UpdateQbAndGps(List<PropertyInfo> changes)
@@ -184,7 +185,7 @@ namespace Pile.db
         {
             using (var db = new pileEntities())
             {
-                var old = db.Customers.Single(x => x.CustomerId == CustomerId);
+                var old = db.Customers.Single(x => x.Id == Id);
                 var histories = new List<CustomerHistory>();
                 foreach (var change in changes)
                 {
@@ -193,7 +194,7 @@ namespace Pile.db
 
                     var hist = new CustomerHistory
                     {
-                        CustomerId = this.CustomerId,
+                        CustomerId = this.Id,
                         Date = DateTime.Now,
                         EmployeeId = ApplicationUserManager.GetEmployeeId(),
                         Field = change.Name,
@@ -283,7 +284,7 @@ namespace Pile.db
 
         public void SendEmail(string emailTypeName)
         {
-            using (var email = new Email(emailTypeName, CustomerId))
+            using (var email = new Email(emailTypeName, Id))
             {
                 email.SendTargetedEmail();
             }

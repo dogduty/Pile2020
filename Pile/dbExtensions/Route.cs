@@ -18,6 +18,75 @@ namespace Pile.db
             }
         }
 
+        public static void GenerateRoutes(DateTime startWeekDate)
+        {
+            using (var db = new pileEntities())
+            {
+                var endWeekDate = startWeekDate.AddDays(7);
+                if (db.Routes.Any(x => x.Date >= startWeekDate && x.Date < endWeekDate))
+                    return;
+
+                var activeCustomers = db.Customers.Where(x => x.Status == "A");
+                var serviceDetails = db.ServiceDetails.Where(x => x.CountDown > 0).Join(activeCustomers, s => s.CustomerId, c => c.Id, (s, c) => s);
+                var pauses = db.Pauses.Where(x => x.PauseDate <= endWeekDate && x.RestartDate > startWeekDate);
+
+                var routeList = new List<Route>();
+                foreach (var serviceDetail in serviceDetails)
+                {
+                    var customer = activeCustomers.Single(x => x.Id == serviceDetail.CustomerId);
+                    var custRoute = GenerateCustomerRoute(customer, serviceDetail, startWeekDate);
+                    //don't add 'em if paused.
+                    if (IsRouteValid(custRoute, customer, pauses, serviceDetail))
+                        routeList.Add(custRoute);
+                }
+
+                db.Routes.AddRange(routeList);
+                var toCountDownList = serviceDetails.Where(x => x.CountDown < 999);
+                foreach (var toCountDown in toCountDownList)
+                    if (routeList.Any(x => x.CustomerID == toCountDown.CustomerId && x.ServiceId == toCountDown.ServiceId))
+                        toCountDown.CountDown -= 1;
+
+                db.SaveChanges();
+            }
+        }
+
+        public static bool IsRouteValid(Route route, Customer customer, IQueryable<Pause> pauses, ServiceDetail serviceDetail)
+        {
+            if (pauses.Any(x => x.CustomerId == route.CustomerID && x.PauseDate <= route.Date && x.RestartDate > route.Date))
+                return false;
+            if (customer.FinalServiceDate < route.Date)
+                return false;
+            if (serviceDetail.CountDown <= 0)
+                return false;
+            if (customer.StartDate > route.Date)
+                return false;
+
+            return serviceDetail.Service.Frequency.IsValidFrequency(route.Date, serviceDetail.LastRouteDate);
+        }
+
+        public static Route GenerateCustomerRoute(Customer c, ServiceDetail sd, DateTime weekStart)
+        {
+            var stopAmount = sd.GetStopAmout();
+            var employee = sd.ServiceDay.Crew.Employees.Single();
+            var route = new Route
+            {
+                CustomerID = c.Id,
+                ServiceId = sd.ServiceId,
+                Date = weekStart.AddDays(sd.ServiceDay.Day),
+                EmployeeId = employee.Id,
+                Status = "A",
+                Discount = sd.Discount,
+                EmpPerc = employee.PayPerc,
+                EmpAmount = employee.GetWeeklyAmount(stopAmount, sd),
+                ServiceDetailId = sd.Id
+            };
+
+            return route;
+
+            
+        }
+
+
         #region CodeToReview-NotReferencedInNew
 
 
@@ -39,7 +108,7 @@ namespace Pile.db
             if (cust.Status != "A")
                 return;
             var routeDatesToCheck = new List<DateTime>();
-            var weekStartsToCheck = new List<DateTime>() { ThisWeekStart(), NextWeekStart() };
+            var weekStartsToCheck = new List<DateTime>() { ThisWeekStart, NextWeekStart };
             if (cust.RouteStartDate.HasValue)
                 routeDatesToCheck.Add(cust.RouteStartDate.Value);
 
@@ -61,7 +130,7 @@ namespace Pile.db
                     throughDate = DateTime.MaxValue;
 
                 var routes = db.Routes.Where(
-                        x => x.CustomerID == cust.CustomerId
+                        x => x.CustomerID == cust.Id
                             && x.Date >= DateTime.Today
                             && x.Date >= afterDate
                             && x.Date < throughDate);
@@ -77,26 +146,26 @@ namespace Pile.db
             using (var db = new pileEntities())
             {
                 if (cust.Status != "A")
-                    throw new Exception(string.Format("Adding a route to an inactive customer is not allowed.  CustId {0}", cust.CustomerId));
-                var thisWeekend = Route.ThisWeekEnd();
+                    throw new Exception(string.Format("Adding a route to an inactive customer is not allowed.  CustId {0}", cust.Id));
+                var thisWeekend = Route.ThisWeekEnd;
                 //Make sure there aren't already routes for customer & timeframe
-                if (!db.Routes.Any(x => x.CustomerID == cust.CustomerId && x.Date >= weekStart && x.Date <= thisWeekend))
+                if (!db.Routes.Any(x => x.CustomerID == cust.Id && x.Date >= weekStart && x.Date <= thisWeekend))
                 {
                     //Make sure at least one other customer has routes defined in timeframe (original logic).
                     if (!db.Routes.Any(x => x.Date >= weekStart && x.Date <= thisWeekend))
                         return;
 
-                    var svcDetails = db.ServiceDetails.Where(x => x.CustomerId == cust.CustomerId).ToList();
+                    var svcDetails = db.ServiceDetails.Where(x => x.CustomerId == cust.Id).ToList();
                     if (svcDetails == null || svcDetails.Count(x => x.CountDown > 0) == 0)
                         return;
 
                     var routesToAdd = new List<Route>();
                     foreach (var serviceDetail in svcDetails)
                     {
-                        var service = db.Services.Single(x => x.ServiceId == serviceDetail.ServiceId);
+                        var service = db.Services.Single(x => x.Id == serviceDetail.ServiceId);
                         if (RouteQualifies(weekStart, service, serviceDetail, cust))
                         {
-                            var employee = serviceDetail.ServiceDay.Crew.Employee; //db.Employees.Single(x => x.Crew == serviceDetail.ServiceDay.Crew && x.Status != "I");
+                            var employee = serviceDetail.ServiceDay.Crew.Employees.First(); //db.Employees.Single(x => x.Crew == serviceDetail.ServiceDay.Crew && x.Status != "I");
                             var total = serviceDetail.GetStopAmout();
 
                             //these discounts are already figured into the total above.  The discount is stored on the route
@@ -107,14 +176,14 @@ namespace Pile.db
                             routesToAdd.Add(new Route
                             {
                                 Date = weekStart.AddDays(serviceDetail.ServiceDay.Day),
-                                CustomerID = cust.CustomerId,
+                                CustomerID = cust.Id,
                                 Discount = discounts,
                                 EmpAmount = employeeAmount.Amount,
-                                EmployeeId = employee.EmployeeID,
-                                EmpPerc = (float)employeeAmount.Percent,
+                                EmployeeId = employee.Id,
+                                EmpPerc = employeeAmount.Percent,
                                 EstNum = serviceDetail.ServiceDay.EstNum,
-                                ServiceDetailId = serviceDetail.ServiceDetailId,
-                                ServiceId = service.ServiceId,
+                                ServiceDetailId = serviceDetail.Id,
+                                ServiceId = service.Id,
                                 Status = "A",
                                 WeeklyRate = total
                             });
@@ -178,24 +247,24 @@ namespace Pile.db
         }
 
 
-        public static DateTime ThisWeekStart()
+        public static DateTime ThisWeekStart
         {
-            return DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek);
+            get { return DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek); }
         }
 
-        public static DateTime ThisWeekEnd()
+        public static DateTime ThisWeekEnd
         {
-            return ThisWeekStart().AddDays(6);
+            get { return ThisWeekStart.AddDays(6); }
         }
 
-        public static DateTime NextWeekStart()
+        public static DateTime NextWeekStart
         {
-            return ThisWeekStart().AddDays(7);
+            get { return ThisWeekStart.AddDays(7); }
         }
 
-        public static DateTime NextWeekEnd()
+        public static DateTime NextWeekEnd
         {
-            return NextWeekStart().AddDays(6);
+            get { return NextWeekStart.AddDays(6); }
         }
 
         public static DateTime StartOfWeekForDate(DateTime date)

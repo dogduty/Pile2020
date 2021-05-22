@@ -36,8 +36,8 @@
                                 <span ng-show="serviceDay.Id == editObj.Id"><select ng-model="editObj.Day" ng-change="updateServiceDay()" ng-options="day.Id as day.Day for day in daysOfTheWeek"></select></span>
                             </td>
                             <td ng-click="edit(serviceDay)">
-                                <span ng-hide="serviceDay.Id == editObj.Id">{{serviceDay.Crew}} - {{(ServiceDetails.Crews | filter: { Crew: serviceDay.Crew})[0].FirstName }}</span>
-                                <span ng-show="serviceDay.Id == editObj.Id"><select ng-model="editObj.Crew" ng-change="updateServiceDay()" ng-options="crew.Crew as (crew.Crew + ' - ' + crew.FirstName) for crew in ServiceDetails.Crews"></select></span>
+                                <span ng-hide="serviceDay.Id == editObj.Id">{{serviceDay.CrewId}} - {{(ServiceDetails.Crews | filter: { CrewId: serviceDay.CrewId})[0].FirstName }}</span>
+                                <span ng-show="serviceDay.Id == editObj.Id"><select ng-model="editObj.CrewId" ng-change="updateServiceDay()" ng-options="crew.CrewId as (crew.CrewId + ' - ' + crew.FirstName) for crew in ServiceDetails.Crews"></select></span>
                             </td>
                             <td ng-click="edit(serviceDay)">
                                 <span ng-hide="serviceDay.Id == editObj.Id">{{serviceDay.NumDogs}}</span>
@@ -80,7 +80,7 @@
         <div>
             <h3 ng-show="editObj">
                 {{ServiceDetails.Customer.FirstName}} {{ServiceDetails.Customer.LastName}} - Day: {{getWeekday(editObj.Day)}} -
-                Crew: {{editObj.Crew}} {{(ServiceDetails.Crews | filter: { Crew: editObj.Crew})[0].FirstName }}
+                Crew: {{editObj.CrewId}} {{(ServiceDetails.Crews | filter: { CrewId: editObj.CrewId})[0].FirstName }}
             </h3>
         </div>
         <div class="col-xs-12">
@@ -102,7 +102,7 @@
                     <tr ng-repeat="serviceDetail in editObj.ServiceDetails">
                         <td></td>
                         <td><input class="number-3" type="number" ng-model="serviceDetail.Qty" /></td>
-                        <td>{{(ServiceDetails.Services | filter: { ServiceId: serviceDetail.ServiceId })[0].Description }}</td>
+                        <td>{{(ServiceDetails.Services | filter: { Id: serviceDetail.ServiceId })[0].Description }}</td>
                         <td><input class="number-6" type="number" ng-model="serviceDetail.Price" step="0.01" /></td>
                         <td><input class="number-6" type="number" ng-model="serviceDetail.QtyPrice" step="0.01" /></td>
                         <td><input class="number-6" type="number" ng-model="serviceDetail.AdditAmount" step="0.01" /></td>

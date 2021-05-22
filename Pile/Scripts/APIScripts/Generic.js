@@ -83,9 +83,10 @@
     }
 
     $scope.saveWithId = function (id, objOverride) {
+
         $scope.errors = null;
         var obj = $parse($scope.webApiController);
-        var servCall = APIService.genSaveWithId($scope.webApiController, id, (objOverride || obj($scope)));
+        var servCall = APIService.genSaveWithId($scope.webApiController + action, id, (objOverride || obj($scope)));
         servCall.then(function (d) {
             var model = $parse($scope.webApiController);
             $scope.messages = "Saved Successfully.";
@@ -142,7 +143,17 @@
         { Id: 3, Day: "Wednesday" },
         { Id: 4, Day: "Thursday" },
         { Id: 5, Day: "Friday" },
-        { Id: 6, Day: "Saturday" }        
+        { Id: 6, Day: "Saturday" }     
+    ];
+
+    $scope.selectableDays = [
+        { Id: 0, Day: "Sun", selected: true },
+        { Id: 1, Day: "Mon", selected: true },
+        { Id: 2, Day: "Tue", selected: true },
+        { Id: 3, Day: "Wed", selected: true },
+        { Id: 4, Day: "Thu", selected: true },
+        { Id: 5, Day: "Fri", selected: true },
+        { Id: 6, Day: "Sat", selected: true }
     ];
 
     function fixDate(data) {

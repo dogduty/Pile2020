@@ -27,7 +27,7 @@ namespace Pile.Models
             }
         }
 
-        public decimal CalcEmpTotal(bool? exclude, decimal? qtyFlatPayment, decimal? qty, decimal? flatEmpPayAmount, float? payPercent, decimal? baseTotal)
+        public decimal CalcEmpTotal(bool? exclude, decimal? qtyFlatPayment, decimal? qty, decimal? flatEmpPayAmount, decimal payPercent, decimal? baseTotal)
         {
             if (exclude.GetValueOrDefault())
                 return 0;
@@ -38,7 +38,7 @@ namespace Pile.Models
             if (flatEmpPayAmount.GetValueOrDefault() != 0)
                 return flatEmpPayAmount.GetValueOrDefault();
 
-            return Math.Round((decimal)payPercent.GetValueOrDefault() / 100 * baseTotal.GetValueOrDefault(), 2);
+            return Math.Round(payPercent / 100 * baseTotal.GetValueOrDefault(), 2);
         }
 
     }

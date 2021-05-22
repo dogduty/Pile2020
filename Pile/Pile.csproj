@@ -251,9 +251,25 @@
     <Compile Include="dbExtensions\Customer.cs" />
     <Compile Include="dbExtensions\EmailAccount.cs" />
     <Compile Include="dbExtensions\Employee.cs" />
+    <Compile Include="dbExtensions\Frequency.cs" />
     <Compile Include="dbExtensions\Route.cs" />
     <Compile Include="dbExtensions\Service.cs" />
     <Compile Include="dbExtensions\ServiceDetail.cs" />
+    <Compile Include="db\Address.cs">
+      <DependentUpon>db.tt</DependentUpon>
+    </Compile>
+    <Compile Include="db\CompanyInfo.cs">
+      <DependentUpon>db.tt</DependentUpon>
+    </Compile>
+    <Compile Include="db\Crew.cs">
+      <DependentUpon>db.tt</DependentUpon>
+    </Compile>
+    <Compile Include="db\Customer.cs">
+      <DependentUpon>db.tt</DependentUpon>
+    </Compile>
+    <Compile Include="db\CustomerHistory.cs">
+      <DependentUpon>db.tt</DependentUpon>
+    </Compile>
     <Compile Include="db\db.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -268,6 +284,72 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>db.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="db\EmailAccount.cs">
+      <DependentUpon>db.tt</DependentUpon>
+    </Compile>
+    <Compile Include="db\EmailAddress.cs">
+      <DependentUpon>db.tt</DependentUpon>
+    </Compile>
+    <Compile Include="db\EmailDomain.cs">
+      <DependentUpon>db.tt</DependentUpon>
+    </Compile>
+    <Compile Include="db\EmailServer.cs">
+      <DependentUpon>db.tt</DependentUpon>
+    </Compile>
+    <Compile Include="db\EmailTemplate.cs">
+      <DependentUpon>db.tt</DependentUpon>
+    </Compile>
+    <Compile Include="db\EmailType.cs">
+      <DependentUpon>db.tt</DependentUpon>
+    </Compile>
+    <Compile Include="db\Employee.cs">
+      <DependentUpon>db.tt</DependentUpon>
+    </Compile>
+    <Compile Include="db\Frequency.cs">
+      <DependentUpon>db.tt</DependentUpon>
+    </Compile>
+    <Compile Include="db\HowFound.cs">
+      <DependentUpon>db.tt</DependentUpon>
+    </Compile>
+    <Compile Include="db\InvoiceMethod.cs">
+      <DependentUpon>db.tt</DependentUpon>
+    </Compile>
+    <Compile Include="db\Note.cs">
+      <DependentUpon>db.tt</DependentUpon>
+    </Compile>
+    <Compile Include="db\Pause.cs">
+      <DependentUpon>db.tt</DependentUpon>
+    </Compile>
+    <Compile Include="db\PaymentMethod.cs">
+      <DependentUpon>db.tt</DependentUpon>
+    </Compile>
+    <Compile Include="db\Phone.cs">
+      <DependentUpon>db.tt</DependentUpon>
+    </Compile>
+    <Compile Include="db\QuitReason.cs">
+      <DependentUpon>db.tt</DependentUpon>
+    </Compile>
+    <Compile Include="db\Route.cs">
+      <DependentUpon>db.tt</DependentUpon>
+    </Compile>
+    <Compile Include="db\Service.cs">
+      <DependentUpon>db.tt</DependentUpon>
+    </Compile>
+    <Compile Include="db\ServiceDay.cs">
+      <DependentUpon>db.tt</DependentUpon>
+    </Compile>
+    <Compile Include="db\ServiceDetail.cs">
+      <DependentUpon>db.tt</DependentUpon>
+    </Compile>
+    <Compile Include="db\ServiceHistory.cs">
+      <DependentUpon>db.tt</DependentUpon>
+    </Compile>
+    <Compile Include="db\ToDo.cs">
+      <DependentUpon>db.tt</DependentUpon>
+    </Compile>
+    <Compile Include="db\ToDoType.cs">
+      <DependentUpon>db.tt</DependentUpon>
     </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -290,10 +372,14 @@
     <Compile Include="Models\CustomerCreate.cs" />
     <Compile Include="Models\CustomerStatus.cs" />
     <Compile Include="Models\CustomerSummary.cs" />
+    <Compile Include="Models\EmployeeBindingModel.cs" />
+    <Compile Include="Models\EmployeeLogin.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\MapInfo.cs" />
     <Compile Include="Models\MetaCustomer.cs" />
+    <Compile Include="Models\MetaEmployee.cs" />
+    <Compile Include="Models\RouteInfo.cs" />
     <Compile Include="Models\ServiceDaily.cs" />
     <Compile Include="Models\ServiceSummary.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -3391,11 +3477,12 @@
     <Content Include="Scripts\APIScripts\Email\EmailDomains.js" />
     <Content Include="Scripts\APIScripts\Email\EmailServers.js" />
     <Content Include="Scripts\APIScripts\Email\EmailTemplates.js" />
-    <Content Include="Scripts\APIScripts\Employees\EmpEdit.js" />
+    <Content Include="Scripts\APIScripts\Employees\Emp.js" />
     <Content Include="Scripts\APIScripts\Generic.js" />
     <Content Include="Scripts\APIScripts\ModalDialog.js" />
     <Content Include="Scripts\APIScripts\Module.js" />
     <Content Include="Scripts\APIScripts\Routes\MapFunctions.js" />
+    <Content Include="Scripts\APIScripts\Routes\RouteList.js" />
     <Content Include="Scripts\APIScripts\Routes\ViewRoutes.js" />
     <Content Include="Scripts\APIScripts\Service.js" />
     <Content Include="Scripts\APIScripts\ServiceDetails\edit.js" />
@@ -4334,9 +4421,11 @@
     <Content Include="Views\Customers\_customerEdit.cshtml" />
     <Content Include="Views\Customers\_serviceSummary.cshtml" />
     <Content Include="Views\ServiceDetails\Edit.cshtml" />
-    <Content Include="Views\Routes\RoutesIndex.cshtml" />
+    <Content Include="Views\RouteMap\RouteMap.cshtml" />
     <Content Include="Views\ServiceHistories\Index.cshtml" />
     <Content Include="Views\Employees\Index.cshtml" />
+    <Content Include="Views\RouteList\RouteList.cshtml" />
+    <Content Include="Views\Employees\Edit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

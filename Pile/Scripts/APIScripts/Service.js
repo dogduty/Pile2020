@@ -54,8 +54,6 @@
         return request;
     }
 
-
-
     this.getEmailSetup = function (objType) {
         return $http.get("api/" + objType);
     }

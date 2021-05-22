@@ -45,8 +45,8 @@
             </tr>
             <tr ng-repeat="cust in Customers.Customers">
                 <td>{{cust.Status}}</td>
-                <td><a class="active" href="/Customers/edit?id={{cust.CustomerId}}" target="customer">{{cust.FirstName}}</a></td>
-                <td><a class="active" href="/Customers/edit?id={{cust.CustomerId}}" target="customer">{{cust.LastName}}</a></td>
+                <td><a class="active" href="/Customers/edit?id={{cust.Id}}" target="customer">{{cust.FirstName}}</a></td>
+                <td><a class="active" href="/Customers/edit?id={{cust.Id}}" target="customer">{{cust.LastName}}</a></td>
                 <td>{{cust.Address.Address1}}</td>
                 <td>{{cust.Address.City}}</td>
                 <td>{{cust.Address.Zip}}</td>

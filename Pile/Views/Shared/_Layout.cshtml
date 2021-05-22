@@ -10,6 +10,7 @@
 <body>
 
 
+
     <nav class="container navbar">
         <div class="container-fluid">
             <div class="navbar-header">
@@ -27,13 +28,17 @@
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav nav">
                     <li>@Html.ActionLink("Main", "Index", "Home", new { area = "" }, null)</li>
-                    <li><a href="~/CustomerTaskListing.aspx?CustID=0">My Tasks</a></li>
-                    <li><a href="~/CallLog.aspx">Call Log</a></li>
-                    <li><a href="~/RouteListing.aspx">Routes</a></li>
-                    <li>@Html.ActionLink("Customers", "Index", "Customers")</li>
-                    <li><a href="~/Reports.aspx">Reports</a></li>
-                    <li><a href="~/SystemUpdates.aspx">Update Forms</a></li>
-                    <li>@Html.ActionLink("Progress", "Index", "Progress")</li>
+                    @if (User.IsInRole("Administrator"))
+                    {
+                        <li><a href="~/CustomerTaskListing.aspx?CustID=0">My Tasks</a></li>
+                        <li><a href="~/CallLog.aspx">Call Log</a></li>
+                        <li>@Html.ActionLink("Routes", "index", "RouteList")</li>
+                        <li>@Html.ActionLink("Customers", "Index", "Customers")</li>
+                        <li><a href="~/Reports.aspx">Reports</a></li>
+                        <li><a href="~/SystemUpdates.aspx">Update Forms</a></li>
+                        <li>@Html.ActionLink("Progress", "Index", "Progress")</li>
+                    }
+
                 </ul>
                 @Html.Partial("_LoginPartial")
             </div>

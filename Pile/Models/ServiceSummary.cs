@@ -18,7 +18,7 @@ namespace Pile.Models
         {
 
             var svcs = (from d in db.ServiceDetails
-                        join s in db.Services on d.ServiceId equals s.ServiceId
+                        join s in db.Services on d.ServiceId equals s.Id
                         //join e in db.Employees on d.ServiceDay.Crew equals e.Crew
                         where d.CustomerId == id //&& e.Status != "I"
                         orderby d.ServiceDay.Day, d.ServiceDay.Crew, s.DisplayOrder
@@ -27,13 +27,13 @@ namespace Pile.Models
                             ServiceName = s.Description,
                             Day = d.ServiceDay.Day,
                             Crew = d.ServiceDay.Crew,
-                            CrewName = d.ServiceDay.Crew.Id + " - " + d.ServiceDay.Crew.Employee.FirstName, // e.Crew.Value.ToString().Trim() + " - " + e.FirstName,
+                            CrewName = d.ServiceDay.Crew.Id + " - " + d.ServiceDay.Crew.Employees.FirstOrDefault().FirstName, // e.Crew.Value.ToString().Trim() + " - " + e.FirstName,
                             Price = d.Price,
                             Discount = d.Discount,
                             QtyPrice = d.QtyPrice,
                             Qty = d.Qty,
                             AddnlAmount = d.AdditAmount,
-                            PayPercent = d.ServiceDay.Crew.Employee.PayPerc, // e.PayPerc,
+                            PayPercent = d.ServiceDay.Crew.Employees.FirstOrDefault().PayPerc, // e.PayPerc,
                             NumDogs = d.ServiceDay.NumDogs,
                             InvoiceAmt = d.InvoiceAmount,
                             EmpPayAdj = d.EmpPayAdj,

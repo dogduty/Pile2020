@@ -25,7 +25,7 @@ namespace Pile.Controllers
                 return NotFound();
 
             var histories = await db.ServiceHistories.Where(x => x.CustomerId == id).OrderByDescending(x => x.Id)
-                                .Join(db.Employees, h => h.EmployeeId, e => e.EmployeeID, (h, e) => new {
+                                .Join(db.Employees, h => h.EmployeeId, e => e.Id, (h, e) => new {
                                         detail = h, employeeFirst = e.FirstName, employeeLast = e.LastName
                                 }).ToListAsync();
                                 

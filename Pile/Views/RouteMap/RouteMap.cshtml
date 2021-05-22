@@ -24,7 +24,7 @@
                     <div class="col-xs-3">
                         <h4>Crews</h4>
                         <div class="col-xs-12" ng-repeat="crew in crews">
-                            <input type="checkbox" ng-model="crew.selected" ng-change="toggleMarker()" /> {{crew.item.Id}} - {{crew.item.Employee.FirstName}}
+                            <input type="checkbox" ng-model="crew.selected" ng-change="toggleMarker()" /> {{crew.item.Id}} - {{crew.item.Employees[0].FirstName}}
                         </div>
                         <hr />
                         <h4>Days</h4>
@@ -33,6 +33,8 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
     </div>
 </div>
 

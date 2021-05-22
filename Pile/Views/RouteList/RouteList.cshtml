@@ -1,0 +1,95 @@
+﻿
+@{
+    ViewBag.Title = "RouteList";
+    Layout = "~/Views/Shared/_LayoutAngular.cshtml";
+}
+<script src="~/Scripts/APIScripts/Routes/RouteList.js?v=1.23"></script>
+
+<div data-ng-app="APIModule">
+    <div ng-controller="Generic" ng-init="init('Routes', 'getRouteList')">
+        <h3 ng-if="errors" class="alert-danger"> {{errors.Message}}</h3>
+        <h3 ng-if="messages" class="alert-success"> {{messages}}</h3>
+        <div class="box">
+            <div class="boxrow header">
+                <div class="row">
+                    <div class="col-xs-3" ng-repeat="employee in routeList.employees">
+                        <input type="checkbox" ng-model="employee.selected" ng-change="showHide()" /> {{employee.crewId}} - {{employee.firstName}}
+                    </div>
+                </div>
+                <hr class="tight" />
+                <div class="row">
+                    <div class="col-xs-2">
+                        <input type="button" value="No Crews/Days" class="btn alert-danger" ng-click="filterHammer(false)" />
+                    </div>
+                    <div class="col-xs-1" ng-repeat="day in selectableDays">
+                        <input type="checkbox" ng-attr-id="{{'day' + day.Id}}" ng-model="day.selected" ng-change="showHide()" /> {{day.Day}}
+                    </div>
+                    <div class="col-xs-2">
+                        <input type="button" value="All Crews/Days" class="btn alert-success" ng-click="filterHammer(true)" />
+                    </div>
+                </div>
+            </div>
+            <div class="boxrow content">
+                <div>
+                    <div>
+                        <h2>Route List 
+                            <span ng-hide="routeList">. . . Loading . . . </span>
+                            <span ng-show="routeList"> for {{routeList.startDate | date:'shortDate'}} through {{routeList.endDate | date:'shortDate'}} </span>
+                        </h2>
+                        <span ng-show="routeList">
+                            <b>Transfer to</b>
+                            @*<select id="ddlTransfer" ng-model="routeList.transferTo" ng-options="transferee.crewId as transferee.firstName for transferee in routelist.employees"></select>*@
+                            <select id="ddlTransfer" ng-model="routeList.transferTo">
+                                <option ng-repeat="emp in routeList.employees" value="{{emp.crewId}}">{{emp.firstName}}</option>
+                            </select>
+                            <input type="button" class="btn btn-xs btn-primary btn-danger" name="actionButton" id="btnTransfer" value="Transfer" ng-click="transfer()" />
+                        </span>
+                    </div>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" ng-model="routeList.selectAll" ng-change="selectAllChange()" id="chkSelAll" /></th>
+                                <th>EmployeeName</th>
+                                <th>Flag</th>
+                                <th>LatePayment</th>
+                                <th>FirstName</th>
+                                <th>LastName</th>
+                                <th>Address</th>
+                                <th>GateCode</th>
+                                <th>Code</th>
+                                <th>Notes</th>
+                                <th>Day</th>
+                                <th>CrewId</th>
+                                <th>Services</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="route in routeList.routeInfos" ng-show="route.Visible">
+                                <td><input type="checkbox" ng-model="route.Selected" /></td>
+                                <td><a target="customer" href="/employees/{{route.EmployeeId}}">{{route.EmployeeName}}</a></td>
+                                <td>{{route.Flag}}</td>
+                                <td>{{route.LatePayment}}</td>
+                                <td><a target="customer" href="/customers/edit?id={{route.CustomerId}}">{{route.FirstName}}</a></td>
+                                <td><a target="customer" href="/customers/edit?id={{route.CustomerId}}">{{route.LastName}}</a></td>
+                                <td>{{route.Address}}</td>
+                                <td>{{route.GateCode}}</td>
+                                <td>{{route.Code}}</td>
+                                <td>{{route.Notes}}</td>
+                                <td>{{route.Day}}</td>
+                                <td>{{route.CrewId}}</td>
+                                <td>{{route.Services}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="boxrow footer">
+                <hr />
+            </div>
+
+
+        </div>
+    </div>
+</div>
+

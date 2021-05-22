@@ -15,9 +15,9 @@
 <script src="~/Scripts/angular-route.js"></script>
 <script src="~/Scripts/ui-bootstrap-tpls-2.5.0.min.js"></script>
 
-<script src="~/Scripts/APIScripts/Module.js?v1.81"></script>
-<script src="~/Scripts/APIScripts/Service.js?v1.81"></script>
-<script src="~/Scripts/APIScripts/Generic.js?v1.81"></script>
+<script src="~/Scripts/APIScripts/Module.js?v1.82"></script>
+<script src="~/Scripts/APIScripts/Service.js?v1.82"></script>
+<script src="~/Scripts/APIScripts/Generic.js?v1.82"></script>
 
 
 </head>
@@ -43,7 +43,7 @@
                     <li>@Html.ActionLink("Main", "Index", "Home", new { area = "" }, null)</li>
                     <li><a href="~/CustomerTaskListing.aspx?CustID=0">My Tasks</a></li>
                     <li><a href="~/CallLog.aspx">Call Log</a></li>
-                    <li><a href="~/RouteListing.aspx">Routes</a></li>
+                    <li>@Html.ActionLink("Routes", "index", "RouteList")</li>
                     <li>@Html.ActionLink("Customers", "Index", "Customers")</li>
                     <li><a href="~/Reports.aspx">Reports</a></li>
                     <li><a href="~/SystemUpdates.aspx">Update Forms</a></li>

@@ -1,4 +1,7 @@
-﻿using System.Security.Claims;
+﻿using System.Collections.Generic;
+using System.Data.Entity;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
@@ -49,6 +52,23 @@ namespace Pile
             return ((ApplicationUser)System.Web.HttpContext.Current.User).EmployeeId;
         }
 
+        public static async Task<List<ApplicationUser>> GetApplicationUsers()
+        {
+
+            var context = ApplicationDbContext.Create();
+            
+            var manager = new ApplicationUserManager(new UserStore<ApplicationUser>(context));
+            return await manager.Users.ToListAsync();
+        }
+
+        public static async Task<ApplicationUser> GetApplicationUser(int employeeId)
+        {
+
+            var context = ApplicationDbContext.Create();
+
+            var manager = new ApplicationUserManager(new UserStore<ApplicationUser>(context));
+            return await manager.Users.Where(x => x.EmployeeId == employeeId).SingleOrDefaultAsync();
+        }
     }
 
     public class ApplicationSignInManager : SignInManager<ApplicationUser, string>
@@ -66,6 +86,22 @@ namespace Pile
         public static ApplicationSignInManager Create(IdentityFactoryOptions<ApplicationSignInManager> options, IOwinContext context)
         {
             return new ApplicationSignInManager(context.GetUserManager<ApplicationUserManager>(), context.Authentication);
+        }
+    }
+
+    public class ApplicationRoleManager : RoleManager<IdentityRole>
+    {
+        public ApplicationRoleManager(IRoleStore<IdentityRole, string> roleStore)
+            : base(roleStore)
+        {
+        }
+
+        public static ApplicationRoleManager Create(IdentityFactoryOptions<ApplicationRoleManager> options, IOwinContext context)
+        {
+            ///It is based on the same context as the ApplicationUserManager
+            var appRoleManager = new ApplicationRoleManager(new RoleStore<IdentityRole>(context.Get<ApplicationDbContext>()));
+
+            return appRoleManager;
         }
     }
 

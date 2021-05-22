@@ -36,11 +36,19 @@ namespace Pile.Controllers
 
     }
 
-    public class RoutesController : Controller
+    public class RouteMapController : Controller
     {
         public ActionResult Index()
         {
-            return View("RoutesIndex");
+            return View("RouteMap");
+        }
+    }
+
+    public class RouteListController : Controller
+    {
+        public ActionResult Index()
+        {
+            return View("RouteList");
         }
     }
 
@@ -63,6 +71,12 @@ namespace Pile.Controllers
     public class EmployeesController : Controller
     {
         public ActionResult Index()
+        {
+            return View();
+        }
+
+        [Route("{id}")]
+        public ActionResult Edit(int id)
         {
             return View();
         }

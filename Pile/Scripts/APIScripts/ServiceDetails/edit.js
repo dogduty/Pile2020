@@ -23,9 +23,9 @@
         $scope.editObj = {};
         $scope.errors = null;
         $scope.editObj.Id = obj.Id;
-        $scope.editObj.CustomerId = $scope.ServiceDetails.Customer.CustomerId;
+        $scope.editObj.CustomerId = $scope.ServiceDetails.Customer.Id;
         $scope.editObj.Day = obj.Day;
-        $scope.editObj.Crew = obj.Crew;
+        $scope.editObj.CrewId = obj.CrewId;
         $scope.editObj.NumDogs = obj.NumDogs;
         $scope.editObj.EstNum = obj.EstNum;
         $scope.editObj.NonTaxable = obj.NonTaxable;
@@ -42,7 +42,7 @@
         if (service == null || $scope.editObj == null || !$scope.editObj.ServiceDetails)
             return true;
         $scope.editObj.ServiceDetails.forEach(x => serviceIds.push(x.ServiceId));
-        return !serviceIds.includes(service.ServiceId);
+        return !serviceIds.includes(service.Id);
     }
 
     $scope.deleteServiceDay = function (obj) {
@@ -53,7 +53,7 @@
     $scope.updateServiceDay = function () {
         var serviceDay = $scope.ServiceDetails.ServiceDays.filter(x => x.Id == $scope.editObj.Id)[0];
         serviceDay.Day = $scope.editObj.Day;
-        serviceDay.Crew = $scope.editObj.Crew;
+        serviceDay.CrewId = $scope.editObj.CrewId;
         serviceDay.NumDogs = $scope.editObj.NumDogs;
         serviceDay.EstNum = $scope.editObj.EstNum;
         serviceDay.NonTaxable = $scope.editObj.NonTaxable;
@@ -78,7 +78,8 @@
         //var serviceDay = $scope.ServiceDetails.ServiceDays.filter(x => x.Id == $scope.editObj.Id)[0];
         //serviceDay.ServiceDetails.push({
         $scope.editObj.ServiceDetails.push({
-            ServiceId: service.ServiceId,
+            ServiceId: service.Id,
+            Description: service.Description,
             Price: service.Price,
             QtyPrice: service.QtyPrice,
             Discount: 0,
@@ -91,7 +92,7 @@
     }
 
     $scope.editSave = function () {
-        $scope.saveWithId($scope.ServiceDetails.Customer.CustomerId, $scope.ServiceDetails.ServiceDays, false);
+        $scope.saveWithId($scope.ServiceDetails.Customer.Id, $scope.ServiceDetails.ServiceDays, false);
         //var returned = $scope.saveWithId($scope.ServiceDetails.Customer.CustomerId, $scope.ServiceDetails.ServiceDays, false);
         //returned.then(function (result) {
         //    $scope.error = null;

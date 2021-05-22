@@ -4,7 +4,7 @@
     Layout = "~/Views/Shared/_LayoutAngular.cshtml";
 }
 
-<script src="~/Scripts/APIScripts/Employees/EmpEdit.js?v=1.0"></script>
+<script src="~/Scripts/APIScripts/Employees/Emp.js?v=1.2"></script>
 
 <div data-ng-app="APIModule">
     <div ng-controller="Generic" ng-init="init('Employees', 'getAll')">
@@ -14,56 +14,60 @@
         <div ng-if="messages" class="alert-success"> {{messages}}</div>
         <table class="table">
             <tr>
+                <th>Crew</th>
                 <th>First Name</th>
                 <th>Last Name</th>
                 <th>Truck</th>
-                <th>Pay %</th>
+                <th>Pay%</th>
                 <th>Home</th>
                 <th>Mobile</th>
-                <th>Address</th>
-                <th>City</th>
-                <th>State</th>
-                <th>Zip</th>
+                <th>User</th>
                 <th>Email</th>
             </tr>
             <tbody>
-                <tr ng-repeat="employee in Employees" class="pointer" ng-click="empEdit(employee.Id)">
-                    <td>{{employee.FirstName}}</td>
-                    <td>{{employee.LastName}}</td>
-                    <td>{{employee.TruckID}}</td>
-                    <td>{{employee.PayPerc}}</td>
-                    <td>{{employee.HomePhone}}</td>
-                    <td>{{employee.MobilePhone}}</td>
-                    <td>{{employee.Address}}</td>
-                    <td>{{employee.City}}</td>
-                    <td>{{employee.State}}</td>
-                    <td>{{employee.Zip}}</td>
-                    <td>{{employee.Email}}</td>
+                <tr ng-repeat="employee in Employees | filter: {Active: true}" class="pointer" ng-click="empEdit(employee.Employee.Id)">
+                    <td>{{employee.Employee.CrewId}}</td>
+                    <td>{{employee.Employee.FirstName}}</td>
+                    <td>{{employee.Employee.LastName}}</td>
+                    <td>{{employee.Employee.TruckID}}</td>
+                    <td>{{employee.Employee.PayPerc}}</td>
+                    <td>{{employee.Employee.HomePhone}}</td>
+                    <td>{{employee.Employee.MobilePhone}}</td>
+                    <td>{{employee.ApplicationUser.UserName}}</td>
+                    <td>{{employee.ApplicationUser.Email}}</td>
                 </tr>
             </tbody>
-            @*<tfoot>
-                <tr>
-                    <td><input type="text" placeholder="First Name" ng-model="FirstName" /></td>
-                    <td><input type="text" placeholder="Last Name" ng-model="LasttName" /></td>
-                    <td><input type="text" placeholder="Truck" ng-model="TruckID" /></td>
-                    <td><input type="text" placeholder="Pay %" ng-model="PayPerc" /></td>
-                    <td><input type="text" placeholder="Home" ng-model="HomePhone" /></td>
-                    <td><input type="text" placeholder="Mobile" ng-model="MobilePhone" /></td>
-                    <td><input type="text" placeholder="Address" ng-model="Address" /></td>
-                    <td><input type="text" placeholder="City" ng-model="City" /></td>
-                    <td><input type="text" placeholder="State" ng-model="State" /></td>
-                    <td><input type="text" placeholder="Zip" ng-model="Zip" /></td>
-                    <td><input type="text" placeholder="Email" ng-model="Email" /></td>
-                </tr>
-                <tr>
-                    <td>
-                        <input type="button" value="Clear" ng-click="edit(null)" />
-                    </td>
-                    <td>
-                        <input type="button" class="alert-success" ng-value="Id == null || Id == 0 ? 'Create New' : 'Save Changes'" ng-click="save()" />
-                    </td>
-                </tr>
-            </tfoot>*@
         </table>
+
+        <h2 ng-click="showInactive=!showInactive">Inactive <span ng-hide="showInactive">+</span><span ng-show="showInactive">-</span></h2>
+
+        <div id="inactiveEmployees" ng-show="showInactive">
+            <table class="table">
+                <tr>
+                    <th>Crew</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Home</th>
+                    <th>Mobile</th>
+                    <th>User</th>
+                    <th>Email</th>
+                    <th></th>
+                </tr>
+                <tbody>
+                    <tr ng-repeat="employee in Employees | filter: {Active: false}" class="pointer">
+                        <td>{{employee.Employee.CrewId}}</td>
+                        <td>{{employee.Employee.FirstName}}</td>
+                        <td>{{employee.Employee.LastName}}</td>
+                        <td>{{employee.Employee.HomePhone}}</td>
+                        <td>{{employee.Employee.MobilePhone}}</td>
+                        <td>{{employee.Employee.Email}}</td>
+                        <td>{{employee.ApplicationUser.Email}}</td>
+                        <td><input type="button" class="btn btn-xs" value="Activate" /></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+
     </div>
 </div>

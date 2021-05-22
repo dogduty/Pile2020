@@ -5,10 +5,10 @@
 {{cust = Customers.Customer;""}}
 
 <div class="col-xs-3">
-    <h2 class="no-top-margin" ng-show="cust.CustomerId == 0">New Customer</h2>
-    <div ng-hide="cust.CustomerId == 0">
+    <h2 class="no-top-margin" ng-show="cust.Id == 0">New Customer</h2>
+    <div ng-hide="cust.Id == 0">
         <h2 class="no-top-margin">{{cust.FirstName}} {{cust.LastName}}</h2>
-        <h4 class="no-top-margin">Customer ID - {{cust.CustomerId}}</h4>
+        <h4 class="no-top-margin">Customer ID - {{cust.Id}}</h4>
     </div>
 </div>
 <div class="col-xs-2">
@@ -45,7 +45,7 @@
 </div>
 
 <div class="col-xs-3">
-    <a class="btn btn-sm btn-primary btn-inverse" href="/routes/?CustID={{cust.CustomerId}}" target="maps">
+    <a class="btn btn-sm btn-primary btn-inverse" href="/routemap/?CustID={{cust.Id}}" target="maps">
         Route Map
     </a>
 </div>
