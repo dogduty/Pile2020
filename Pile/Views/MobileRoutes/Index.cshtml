@@ -1,0 +1,105 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_LayoutAngular.cshtml";
+}
+
+<script src="~/Scripts/APIScripts/MobileRoutes/Mobile.js?v=1.12"></script>
+
+<div data-ng-app="APIModule">
+    <div ng-controller="Generic" ng-init="init('MobileRoutes', 'getAll')">
+        <h2>Stops 
+            <span ng-hide="MobileRoutes">. . . Loading . . . </span>
+            <span ng-show="MobileRoutes"> for {{MobileRoutes.FirstName}}</span>
+        </h2>
+        <div>Click Name to Expand</div>
+        <div ng-if="errors" class="alert-danger"> {{errors}}</div>
+        <div ng-if="messages" class="alert-success"> {{messages}}</div>
+        <table class="table">
+            <tr>
+                <th>Stop</th>
+                <th>Customer</th>
+            </tr>
+            <tbody>
+                <tr class="yardConditions" ng-repeat="stop in MobileRoutes.stopInfos | filter: isNotCompleted track by $id(stop)">
+                    <td>
+                        <b>{{stop.EstNum}}</b> - ({{stop.Date | date : 'M/d'}})
+                        <div ng-show="stop.Expand">
+                            <br />
+                            <input type="button" class="btn btn-inverse" value="Conditions" ng-hide="stop.ShowConditions" ng-click="showConditions(stop)" />
+                        </div>
+                        <div ng-show="(stop.Expand && stop.ShowConditions)" ng-repeat="condition in stop.Conditions" class="yardConditions">
+                            <!--an incoming blank is treated as a freeform 'other'-->
+                            <span ng-hide="condition.ShowCheck">
+                                <input type="text" class="yardConditions" placeholder="Other" ng-model="condition.Problem" />
+                            </span>
+                            <span ng-show="condition.ShowCheck">
+                                <input type="checkbox" class="checkbox-inline big-checkbox" ng-model="condition.Selected" /> {{condition.Problem}}
+                            </span>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="pointer" ng-click="expand(stop)">
+                            {{stop.FirstName}} {{stop.LastName}}<br />
+                            {{stop.Address1}}
+                        </span>
+                        <div ng-show="stop.Expand">
+                            <span ng-show="stop.Address2">{{stop.Address2}}<br /></span>
+                            <span ng-show="stop.Code">Code: {{stop.Code}}<br /></span>
+                            <div ng-repeat="phone in stop.Phones">{{phone.PhoneType}}: {{phone.Number}} {{phone.Note}}</div>
+                            <div ng-repeat="note in stop.Notes"><strong>{{note.Content}}</strong></div>
+                            <span ng-show="stop.Combo">Combo: {{stop.Combo}}<br /></span>
+                            <br />
+                            <div class="mobileRouteServices" ng-repeat="detail in stop.Details">
+                                <input type="checkbox" class="checkbox-inline big-checkbox" ng-model="detail.Completed" />
+                                <strong>{{detail.Description}}</strong>
+                            </div>
+                            <br />
+                            <div>
+                                <input type="button" class="btn btn-success btn-lg" value="Save" ng-click="markComplete(stop)" />
+                            </div>
+                        </div>
+                        @*<input type="button" class="btn btn-xs btn-danger" title="Deactivate" value="X" ng-click="saveWithIdAndAction(employee.Id, 'deactivate', employee);false;" />*@
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 ng-click="showInactive=!showInactive">Completed <span ng-hide="showInactive">+</span><span ng-show="showInactive">-</span></h2>
+
+        <div id="inactiveEmployees" ng-show="showInactive">
+            <table class="table">
+                <tr>
+                    <th>Stop</th>
+                    <th>Customer</th>
+                </tr>
+                <tbody>
+                    <tr ng-repeat="stop in MobileRoutes.stopInfos | filter: isCompleted">
+                        <td><b>{{stop.EstNum}}</b> - ({{stop.Date | date : 'M/d'}})</td>
+                        <td>
+                            <span class="pointer" ng-click="expand(stop)">
+                                {{stop.FirstName}} {{stop.LastName}}<br />
+                                {{stop.Address1}}
+                            </span>
+                            <div ng-show="stop.Expand">
+                                <span ng-show="stop.Address2">{{stop.Address2}}<br /></span>
+                                <span ng-show="stop.Code">Code: {{stop.Code}}<br /></span>
+                                <div ng-repeat="phone in stop.Phones">{{phone.PhoneType}}: {{phone.Number}} {{phone.Note}}</div>
+                                <div ng-repeat="note in stop.Notes"><strong>{{note.Content}}</strong></div>
+                                <span ng-show="stop.Combo">Combo: {{stop.Combo}}<br /></span>
+                                <br />
+                                <div class="mobileRouteServices" ng-repeat="detail in stop.Details">
+                                    <strong>{{detail.Description}}</strong>
+                                </div>
+                                <br />
+                            </div>
+                            @*<input type="button" class="btn btn-xs btn-danger" title="Deactivate" value="X" ng-click="saveWithIdAndAction(employee.Id, 'deactivate', employee);false;" />*@
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+
+    </div>
+</div>

@@ -51,6 +51,7 @@ namespace Pile.db
         public virtual DbSet<ToDo> ToDoes { get; set; }
         public virtual DbSet<ToDoType> ToDoTypes { get; set; }
         public virtual DbSet<Employee> Employees { get; set; }
+        public virtual DbSet<Setting> Settings { get; set; }
         public virtual DbSet<Route> Routes { get; set; }
     }
 }

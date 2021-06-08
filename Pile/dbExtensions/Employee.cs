@@ -11,6 +11,10 @@ namespace Pile.db
     {
         public virtual Models.ApplicationUser User { get; set; }
 
+        public static Employee Create()
+        {
+            return new Employee { User = new Models.ApplicationUser() };
+        }
 
         public decimal GetWeeklyAmount(decimal stopAmount, ServiceDetail sd)
         {

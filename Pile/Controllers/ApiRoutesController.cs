@@ -13,7 +13,6 @@ using System.Web.Http;
 
 namespace Pile.Controllers
 {
-    [Authorize(Roles = "Administrator")]
     [RoutePrefix("api/Routes")]
     public class ApiRoutesController : ApiController
     {
@@ -136,7 +135,7 @@ namespace Pile.Controllers
             {
                 var emp = db.Employees.Single(x => x.CrewId == crewId);
                 var donorRoutes = db.Routes.Where(x => RouteIds.Contains(x.Id) && x.EmployeeId != emp.Id).OrderBy(x => x.Date).ThenBy(x => x.EmployeeId).ThenBy(x => x.EstNum);
-                var servicDetailsIds = await donorRoutes.Select(x => x.ServiceDetailId.Value).Distinct().ToListAsync();
+                var servicDetailsIds = await donorRoutes.Select(x => x.ServiceDetailId).Distinct().ToListAsync();
                 var serviceDetails = db.ServiceDetails.Where(x => servicDetailsIds.Contains(x.Id));
                 var days = donorRoutes.Select(x => x.Date).Distinct();
 
@@ -149,7 +148,7 @@ namespace Pile.Controllers
                         route.EmployeeId = emp.Id;
                         route.EstNum = ++lastRecipientRouteEstNum;
                         route.EmpPerc = emp.PayPerc;
-                        route.EmpAmount = emp.GetWeeklyAmount(route.WeeklyRate.Value, serviceDetails.Single(x => x.Id == route.ServiceDetailId.Value));
+                        route.EmpAmount = emp.GetWeeklyAmount(route.WeeklyRate.Value, serviceDetails.Single(x => x.Id == route.ServiceDetailId));
                     }
                 }
 

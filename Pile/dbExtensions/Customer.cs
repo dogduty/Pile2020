@@ -196,7 +196,7 @@ namespace Pile.db
                     {
                         CustomerId = this.Id,
                         Date = DateTime.Now,
-                        EmployeeId = ApplicationUserManager.GetEmployeeId(),
+                        EmployeeId = ApplicationUserManager.GetCurrentUserEmployeeId(),
                         Field = change.Name,
                         Type = 33,
                         Notes = string.Format("Old value: {0} - New value: {1}", oldval, newval)

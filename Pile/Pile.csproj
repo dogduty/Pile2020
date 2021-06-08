@@ -232,12 +232,14 @@
     <Compile Include="Classes\GoogleGeocoding.cs" />
     <Compile Include="Classes\Invoice.cs" />
     <Compile Include="Classes\ProgressTracker.cs" />
+    <Compile Include="Classes\Settings.cs" />
     <Compile Include="ClassExtensions\ApplicationUser.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\ApiAddressesController.cs" />
     <Compile Include="Controllers\ApiEmailAddressesController.cs" />
     <Compile Include="Controllers\ApiEmployeesController.cs" />
+    <Compile Include="Controllers\ApiMobileRouteController.cs" />
     <Compile Include="Controllers\ApiNotesController.cs" />
     <Compile Include="Controllers\ApiPhonesController.cs" />
     <Compile Include="Controllers\ApiRoutesController.cs" />
@@ -345,6 +347,9 @@
     <Compile Include="db\ServiceHistory.cs">
       <DependentUpon>db.tt</DependentUpon>
     </Compile>
+    <Compile Include="db\Setting.cs">
+      <DependentUpon>db.tt</DependentUpon>
+    </Compile>
     <Compile Include="db\ToDo.cs">
       <DependentUpon>db.tt</DependentUpon>
     </Compile>
@@ -373,12 +378,12 @@
     <Compile Include="Models\CustomerStatus.cs" />
     <Compile Include="Models\CustomerSummary.cs" />
     <Compile Include="Models\EmployeeBindingModel.cs" />
-    <Compile Include="Models\EmployeeLogin.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\MapInfo.cs" />
     <Compile Include="Models\MetaCustomer.cs" />
     <Compile Include="Models\MetaEmployee.cs" />
+    <Compile Include="Models\MobileRouteViewModels.cs" />
     <Compile Include="Models\RouteInfo.cs" />
     <Compile Include="Models\ServiceDaily.cs" />
     <Compile Include="Models\ServiceSummary.cs" />
@@ -3479,6 +3484,7 @@
     <Content Include="Scripts\APIScripts\Email\EmailTemplates.js" />
     <Content Include="Scripts\APIScripts\Employees\Emp.js" />
     <Content Include="Scripts\APIScripts\Generic.js" />
+    <Content Include="Scripts\APIScripts\MobileRoutes\Mobile.js" />
     <Content Include="Scripts\APIScripts\ModalDialog.js" />
     <Content Include="Scripts\APIScripts\Module.js" />
     <Content Include="Scripts\APIScripts\Routes\MapFunctions.js" />
@@ -4426,9 +4432,11 @@
     <Content Include="Views\Employees\Index.cshtml" />
     <Content Include="Views\RouteList\RouteList.cshtml" />
     <Content Include="Views\Employees\Edit.cshtml" />
+    <Content Include="Views\MobileRoutes\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\Account\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-theme.min.css.map" />

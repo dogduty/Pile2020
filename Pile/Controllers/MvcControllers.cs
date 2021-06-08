@@ -13,8 +13,10 @@ using System.Reflection;
 
 namespace Pile.Controllers
 {
+
     public class CustomersController : Controller
     {
+
         // GET: Customers
         public ActionResult Index()
         {
@@ -77,6 +79,14 @@ namespace Pile.Controllers
 
         [Route("{id}")]
         public ActionResult Edit(int id)
+        {
+            return View();
+        }
+    }
+
+    public class MobileRoutesController : Controller
+    {
+        public ActionResult Index()
         {
             return View();
         }

@@ -26,8 +26,8 @@ namespace Pile.db
         public Nullable<decimal> Discount { get; set; }
         public Nullable<System.DateTime> LastServiceDate { get; set; }
         public Nullable<System.DateTime> StartServiceDate { get; set; }
-        public Nullable<int> ServiceDetailId { get; set; }
-        public Nullable<decimal> EstNum { get; set; }
+        public int ServiceDetailId { get; set; }
+        public decimal EstNum { get; set; }
     
         public virtual Customer Customer { get; set; }
     }

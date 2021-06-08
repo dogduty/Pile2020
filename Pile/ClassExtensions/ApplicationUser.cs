@@ -14,12 +14,19 @@ namespace Pile.Models
     public partial class ApplicationUser : IdentityUser
     {
 
-        public async Task SendEmailConfirmation(UrlHelper Url, ApplicationUserManager UserManager)
+        public async Task SendEmailConfirmation(UrlHelper url, ApplicationUserManager userManager)
         {
+            //string code = await userManager.GenerateEmailConfirmationTokenAsync(this.Id);
+            //var callbackUrl = url.Action("ConfirmEmail", "Account", new { userId = this.Id, code = code }, protocol: HttpContext.Current.Request.Url.Scheme);
+            //await SendEmailConfirmation(callbackUrl, userManager);
+            await SendEmailConfirmation(userManager);
+        }
 
-            string code = await UserManager.GenerateEmailConfirmationTokenAsync(this.Id);
-            var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = this.Id, code = code }, protocol: HttpContext.Current.Request.Url.Scheme);
-            await UserManager.SendEmailAsync(this.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>.  Or by pasting this in your browser's address bar: " + callbackUrl);
+        public async Task SendEmailConfirmation(ApplicationUserManager userManager)
+        {
+            string code = await userManager.GenerateEmailConfirmationTokenAsync(this.Id);
+            var callbackUrl = String.Format(Settings.GetValue("tokenEmailUrlTemplate", "URL not configured in pile.  {0} {1}"), this.Id, code); 
+            await userManager.SendEmailAsync(this.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>.  Or by pasting this in your browser's address bar: " + callbackUrl);
         }
 
         public int EmployeeId { get; set; }

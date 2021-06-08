@@ -2,33 +2,33 @@
 
     this.genGetAll = function (controller, qs) {
         if (qs === undefined)
-            return $http.get("/api/" + controller);
+            return $http.get(appApiPath + controller);
            
-        return $http.get("/api/" + controller + "?" + qs);
+        return $http.get(appApiPath + controller + "?" + qs);
     }
 
     this.genGetDetails = function (controller, id) {
-        return $http.get("/api/" + controller + "/details/" + id)
+        return $http.get(appApiPath + controller + "/details/" + id)
     }
 
     this.genGetOne = function (controller, id) {
-        return $http.get("/api/" + controller + "/" + id);
+        return $http.get(appApiPath + controller + "/" + id);
     }
 
     this.genDelete = function (controller, id) {
-        return $http.delete("/api/" + controller + "/" + id);
+        return $http.delete(appApiPath + controller + "/" + id);
     }
 
     this.genGetNew = function (controller, objType) {
         if (objType === undefined)
-            return $http.get("/api/" + controller + "/new")
+            return $http.get(appApiPath + controller + "/new")
 
-        return $http.get("/api/" + controller + "/new/" + objType);
+        return $http.get(appApiPath + controller + "/new/" + objType);
     }
 
     this.genSave = function (controller, obj) {
         var method = "post";
-        var url = "/api/" + controller;
+        var url = appApiPath + controller;
 
         if (obj.Id != null && obj.Id != 0) {
             method = "put";
@@ -45,7 +45,7 @@
 
     this.genSaveWithId = function (controller, id, obj) {
         var method = "post";
-        var url = "/api/" + controller + '/' + id;
+        var url = appApiPath + controller + '/' + id;
         var request = $http({
             method: method,
             url: url,
@@ -55,17 +55,17 @@
     }
 
     this.getEmailSetup = function (objType) {
-        return $http.get("api/" + objType);
+        return $http.get(appApiPath + objType);
     }
 
     this.deleteEmailSetup = function (objType, id) {
-        return $http.delete("api/" + objType + "/" + id);
+        return $http.delete(appApiPath + objType + "/" + id);
     }
 
     this.saveEmailSetup = function (objType, obj) {
 
         var method = "post";
-        var url = "/api/" + objType;
+        var url = appApiPath + objType;
 
         if (obj.Id != null && obj.Id != 0) {
             method = "put";

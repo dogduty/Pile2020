@@ -258,8 +258,8 @@
           <Property Name="Discount" Type="smallmoney" />
           <Property Name="LastServiceDate" Type="datetime" />
           <Property Name="StartServiceDate" Type="datetime" />
-          <Property Name="ServiceDetailId" Type="int" />
-          <Property Name="EstNum" Type="decimal" Precision="7" Scale="1" />
+          <Property Name="ServiceDetailId" Type="int" Nullable="false" />
+          <Property Name="EstNum" Type="decimal" Precision="7" Scale="1" Nullable="false" />
         </EntityType>
         <EntityType Name="Service">
           <Key>
@@ -324,6 +324,13 @@
           <Property Name="CustomerId" Type="int" Nullable="false" />
           <Property Name="Description" Type="varchar" MaxLength="255" Nullable="false" />
           <Property Name="Complaint" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Setting">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="ConfigValue" Type="varchar" MaxLength="255" Nullable="false" />
         </EntityType>
         <EntityType Name="ToDo">
           <Key>
@@ -685,6 +692,7 @@
           <EntitySet Name="ServiceDay" EntityType="Self.ServiceDay" Schema="pile" store:Type="Tables" />
           <EntitySet Name="ServiceDetail" EntityType="Self.ServiceDetail" Schema="pile" store:Type="Tables" />
           <EntitySet Name="ServiceHistory" EntityType="Self.ServiceHistory" Schema="pile" store:Type="Tables" />
+          <EntitySet Name="Setting" EntityType="Self.Setting" Schema="pile" store:Type="Tables" />
           <EntitySet Name="ToDo" EntityType="Self.ToDo" Schema="pile" store:Type="Tables" />
           <EntitySet Name="ToDoType" EntityType="Self.ToDoType" Schema="pile" store:Type="Tables" />
           <AssociationSet Name="FK__Address__Custome__4885B9BB" Association="Self.FK__Address__Custome__4885B9BB">
@@ -915,6 +923,7 @@
             <End Role="Employee" EntitySet="Employees" />
             <End Role="ServiceHistory" EntitySet="ServiceHistories" />
           </AssociationSet>
+          <EntitySet Name="Settings" EntityType="db.Setting" />
           <EntitySet Name="Routes" EntityType="db.Route" />
           <AssociationSet Name="FK_Route_Customer" Association="db.FK_Route_Customer">
             <End Role="Customer" EntitySet="Customers" />
@@ -1592,6 +1601,13 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="Setting">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="ConfigValue" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+        </EntityType>
         <EntityType Name="Route">
           <Key>
             <PropertyRef Name="Id" />
@@ -1608,8 +1624,8 @@
           <Property Name="Discount" Type="Decimal" Precision="10" Scale="4" />
           <Property Name="LastServiceDate" Type="DateTime" Precision="3" />
           <Property Name="StartServiceDate" Type="DateTime" Precision="3" />
-          <Property Name="ServiceDetailId" Type="Int32" />
-          <Property Name="EstNum" Type="Decimal" Precision="7" Scale="1" />
+          <Property Name="ServiceDetailId" Type="Int32" Nullable="false" />
+          <Property Name="EstNum" Type="Decimal" Nullable="false" Precision="7" Scale="1" />
           <NavigationProperty Name="Customer" Relationship="db.FK_Route_Customer" FromRole="Route" ToRole="Customer" />
         </EntityType>
         <Association Name="FK_Route_Customer">
@@ -1977,6 +1993,14 @@
                 <ScalarProperty Name="LastName" ColumnName="LastName" />
                 <ScalarProperty Name="FirstName" ColumnName="FirstName" />
                 <ScalarProperty Name="CrewId" ColumnName="CrewId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Settings">
+            <EntityTypeMapping TypeName="db.Setting">
+              <MappingFragment StoreEntitySet="Setting">
+                <ScalarProperty Name="ConfigValue" ColumnName="ConfigValue" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

@@ -15,9 +15,17 @@
 <script src="~/Scripts/angular-route.js"></script>
 <script src="~/Scripts/ui-bootstrap-tpls-2.5.0.min.js"></script>
 
-<script src="~/Scripts/APIScripts/Module.js?v1.82"></script>
-<script src="~/Scripts/APIScripts/Service.js?v1.82"></script>
-<script src="~/Scripts/APIScripts/Generic.js?v1.82"></script>
+<script type="text/javascript">
+    var appRoot = '@Request.ApplicationPath';
+    if (appRoot[appRoot.length - 1] != "/") {
+        appRoot = appRoot + "/";
+    }
+    var appApiPath = appRoot + 'api/';
+</script>
+
+<script src="~/Scripts/APIScripts/Module.js?v1.86"></script>
+<script src="~/Scripts/APIScripts/Service.js?v1.86"></script>
+<script src="~/Scripts/APIScripts/Generic.js?v1.86"></script>
 
 
 </head>

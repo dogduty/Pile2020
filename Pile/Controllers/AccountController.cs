@@ -115,6 +115,18 @@ namespace Pile.Controllers
             };
         }
 
+        // GET: /Account/ConfirmEmail
+        [AllowAnonymous]
+        [Route("ConfirmEmail/{userId}/{code}")]
+        public async Task<IHttpActionResult> ConfirmEmail(string userId, string code)
+        {
+            if (userId == null || code == null)
+                return BadRequest("Error.");
+
+            var result = await UserManager.ConfirmEmailAsync(userId, code);
+            return Ok(new { ConfirmEmail = result });
+        }
+
         // POST api/Account/ChangePassword
         [Route("ChangePassword")]
         public async Task<IHttpActionResult> ChangePassword(ChangePasswordBindingModel model)

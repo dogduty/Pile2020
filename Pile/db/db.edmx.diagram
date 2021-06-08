@@ -55,7 +55,8 @@
         <EntityTypeShape EntityType="db.Employee" Width="1.5" PointX="9" PointY="8.25" />
         <AssociationConnector Association="db.FK_Employee_Crew" />
         <AssociationConnector Association="db.FK_serviceHistory_Employee" />
-        <EntityTypeShape EntityType="db.Route" Width="1.5" PointX="7.25" PointY="16.125" />
+        <EntityTypeShape EntityType="db.Setting" Width="1.5" PointX="3.375" PointY="0.75" />
+        <EntityTypeShape EntityType="db.Route" Width="1.5" PointX="6.875" PointY="14.875" />
         <AssociationConnector Association="db.FK_Route_Customer" />
         </Diagram>
     </edmx:Diagrams>

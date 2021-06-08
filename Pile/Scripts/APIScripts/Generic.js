@@ -86,7 +86,24 @@
 
         $scope.errors = null;
         var obj = $parse($scope.webApiController);
+        //I think "action" below is useless. . .. hmmm...
         var servCall = APIService.genSaveWithId($scope.webApiController + action, id, (objOverride || obj($scope)));
+        servCall.then(function (d) {
+            var model = $parse($scope.webApiController);
+            $scope.messages = "Saved Successfully.";
+            $scope.editObj = null;
+        }, function (error) {
+            $scope.errors = error.data;
+        });
+    }
+
+    $scope.saveWithIdAndAction = function (id, action, objOverride) {
+        if (!confirm("Are you sure you want to " + action + "?")) {
+            return;
+        }
+        $scope.errors = null;
+        var obj = $parse($scope.webApiController);
+        var servCall = APIService.genSaveWithId($scope.webApiController + "/" + action, id, (objOverride || obj($scope)));
         servCall.then(function (d) {
             var model = $parse($scope.webApiController);
             $scope.messages = "Saved Successfully.";
@@ -122,6 +139,17 @@
             return;
 
         window.open(url, target);
+    }
+
+    $scope.isBlankOrNull = function (value) {
+        if (!value || value == '')
+            return true;
+
+        return false;
+    }
+
+    $scope.isNotBlankOrNull = function (value) {
+        return !$scope.isBlankOrNull(value);
     }
 
     $scope.getWeekday = function (dow) {

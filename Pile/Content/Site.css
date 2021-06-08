@@ -172,3 +172,17 @@ div .note {
 .number-9 {
     width: 150px;
 }
+
+.mobileRouteServices {
+    font-size: x-large
+}
+
+.yardConditions {
+    font-size: larger;
+    max-width: 150px;
+}
+
+.big-checkbox {
+    width: 30px;
+    height: 30px;
+}
